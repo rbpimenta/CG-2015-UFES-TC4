@@ -124,6 +124,15 @@ void idle(void) {
     
     appSettings->getJogador()->moverHelice();
     appSettings->getJogador()->movimentarTiros();
+    
+    int i = 0;
+    Helicoptero* inimigo;
+    for (i = 0; i < appSettings->getQuantidadeInimigos(); i++) {
+    	inimigo = &(appSettings->getInimigos()->at(i));
+    	inimigo->moverHelice();
+    	inimigo->movimentarTiros();
+    }
+    
     glutPostRedisplay();
 }
 
@@ -159,7 +168,7 @@ void mouseMove (int x, int y) {
 int main(int argc, char** argv) {
 	appSettings->loadConfigXML(argv);
 	appSettings->loadSvgFile();
-	appSettings->getJogador()->setarValores(appSettings->getDadosJogador());
+	appSettings->carregarInformacoesHelicoptero();
 
 	// Iniciando tela e demais variáveis
 	glutInit(&argc, argv);

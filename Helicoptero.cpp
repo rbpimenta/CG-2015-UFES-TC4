@@ -4,7 +4,10 @@ Helicoptero::Helicoptero()
 {
 	// Inicializando velocidades
 	this->velocidadeHelicoptero = 0.0;
+	
 	this->tempoDeVoo = 0.0;
+	
+	this->freqTiro = 0.0;
 	
 	// Movimentação
 	this->posX = 0.0;
@@ -33,6 +36,9 @@ Helicoptero::Helicoptero()
 	this->posMiraAnteriorY = 0.0;
 	
 	// Inicializando variáveis do corpo
+	this->color[0] = 0.0;
+	this->color[1] = 0.0;
+	this->color[2] = 0.0;
 	this->mira = new Rectangle();
 	this->corpo = new Rectangle();
 	this->cauda = new Rectangle();
@@ -161,7 +167,7 @@ void Helicoptero::desenharMira() {
 			yTranslated = -this->mira->getHeight();
 			glTranslatef(xTranslated, yTranslated,0.0);
 
-			this->mira->desenharRectangle(this->mira->getHeight(), this->mira->getWidth(), 0.0, 0.0, 0.0);
+			this->mira->desenharRectangle(this->mira->getHeight(), this->mira->getWidth(), this->color[0], this->color[1], this->color[2]);
 		glPopMatrix();
 		/*
 	Add to work on linux
@@ -174,7 +180,7 @@ void Helicoptero::desenharCorpo() {
 	float yTranslated = this->mira->getHeight();
 	glPushMatrix();
 		glTranslatef(xTranslated, yTranslated, 0.0);
-		this->corpo->desenharRectangle(this->corpo->getHeight(), this->corpo->getWidth(), 0.0, 1.0, 0.0);
+		this->corpo->desenharRectangle(this->corpo->getHeight(), this->corpo->getWidth(), this->color[0], this->color[1], this->color[2]);
 	glPopMatrix();
 }
 
@@ -183,7 +189,7 @@ void Helicoptero::desenharCaudaDireita() {
 	float yTranslated = this->mira->getHeight() + this->corpo->getHeight() + 20;
 	glPushMatrix();
 		glTranslatef(xTranslated, yTranslated, 0.0);
-		this->caudaDireita->desenharRectangle(this->caudaDireita->getHeight(), this->caudaDireita->getWidth(), 0.0, 1.0, 0.0);
+		this->caudaDireita->desenharRectangle(this->caudaDireita->getHeight(), this->caudaDireita->getWidth(), this->color[0], this->color[1], this->color[2]);
 	glPopMatrix();
 }
 
@@ -192,7 +198,7 @@ void Helicoptero::desenharCaudaEsquerda() {
 	float yTranslated = this->mira->getHeight() + this->corpo->getHeight() + 20;
 	glPushMatrix();
 		glTranslatef(xTranslated, yTranslated, 0.0);
-		this->caudaEsquerda->desenharRectangle(this->caudaEsquerda->getHeight(), this->caudaEsquerda->getWidth(), 0.0, 1.0, 0.0);
+		this->caudaEsquerda->desenharRectangle(this->caudaEsquerda->getHeight(), this->caudaEsquerda->getWidth(), this->color[0], this->color[1], this->color[2]);
 	glPopMatrix();
 }
 
@@ -204,7 +210,7 @@ void Helicoptero::desenharCaudaPrincipal() {
 		glTranslatef(xTranslated, yTranslated, 0.0);
 		
 		// desenhar cauda principal
-		this->cauda->desenharRectangle(this->cauda->getHeight(), this->cauda->getWidth(), 0.0, 1.0, 0.0);		
+		this->cauda->desenharRectangle(this->cauda->getHeight(), this->cauda->getWidth(), this->color[0], this->color[1], this->color[2]);		
 	glPopMatrix();
 	
 }
@@ -291,10 +297,9 @@ bool Helicoptero::detectarLimites (float limiteSuperior, float limiteInferior, f
 
 void Helicoptero::desenharHelicoptero() {
 	float comprimentoHelicoptero = this->corpo->getHeight() + 20 + this->caudaDireita->getHeight();
-//	float fatorEscala = (1/(2*this->dadosCircle->getR()))*this->escalaHelicoptero;
+
 
 	// Definir o centro do círculo como a posição posX e posY
-
 	float fatorEscala = (((2*this->dadosCircle->getR())/comprimentoHelicoptero)*this->escalaHelicoptero)*0.8;
 
 	float raio = comprimentoHelicoptero/2;
@@ -337,7 +342,7 @@ void Helicoptero::desenharHelicoptero() {
 				glTranslatef(xTranslated, yTranslated, 0.0);
 				glScalef(1/fatorEscala, 1/fatorEscala, 0.0);
 				// Desenhar círculo do helicoptero
-				this->dadosCircle->desenharCircle(0.0, 1.0, 0.0);
+				this->dadosCircle->desenharCircle(this->color[0], this->color[1], this->color[2]);
 			glPopMatrix();
 			
 			this->desenharMira();
@@ -455,4 +460,10 @@ void Helicoptero::movimentarTiros() {
 			t->movimentarParaFrente();
 		}
 	}
+}
+
+void Helicoptero::definirCor(float R, float G, float B) {
+	this->color[0] = R;
+	this->color[1] = G;
+	this->color[2] = B;
 }

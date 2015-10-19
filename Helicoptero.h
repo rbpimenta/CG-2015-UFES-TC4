@@ -22,7 +22,12 @@ class Helicoptero
 protected:
 	// Definindo velocidade do helicoptero
 	float velocidadeHelicoptero;
-	float tempoDeVoo;
+	
+	// valor se id = jogador
+	float tempoDeVoo; 
+	
+	// valores se id = inimigo
+	float freqTiro;
 	
 	// Helice
 	float velocidadeHelices;
@@ -94,6 +99,7 @@ public:
 	void rotacionarEsquerda();
 	
 	// Desenhar Helicoptero
+	float color[3];
 	void desenharMira();
 	void desenharCorpo();
 	void desenharCaudaPrincipal();
@@ -104,6 +110,8 @@ public:
 	
 	bool detectarLimites(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito);
 	void desenharHelicoptero();
+	
+	void definirCor (float R, float G, float B);
 	
 	//Getters and Setters
 	void setVelocidade (float v) {
@@ -118,6 +126,13 @@ public:
 	}
 	float getTempoDeVoo () {
 		return this->tempoDeVoo;
+	}
+	
+	void setFreqTiro (float f) {
+		this->freqTiro = f;
+	}
+	float getFreqTiro () {
+		return this->freqTiro;
 	}
 };
 

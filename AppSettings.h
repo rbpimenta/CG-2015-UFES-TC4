@@ -32,10 +32,13 @@ protected:
 	
 	// variavel que representa o helicoptero do jogador
 	Helicoptero* jogador;
+	vector<Helicoptero>* inimigos;
 	
 	Tiro* tiro;
 	
 	float velocidadeHelicoptero;
+	float velocidadeHelicopteroInimigo;
+	float freqTiro;
 	float velocidadeTiro;
 	float tempoDeVoo;
 
@@ -63,7 +66,15 @@ private:
 public:
 	AppSettings();
 	virtual ~AppSettings();
+	
 	void carregarInformacoesHelicoptero(XMLElement* elem);
+	void carregarInformacoesHelicopteroInimigo(XMLElement* elem);
+	
+	void carregarInformacoesHelicoptero();
+	void carregarHelicopteroJogador();
+	void carregarHelicopteroInimigos();
+	void setarPosicaoHelicopteros();
+	
 	void carregarInformacoesTiro();
 	void loadConfigXML (char** path);
 	void loadSvgFile ();
@@ -95,6 +106,10 @@ public:
 	
 	Helicoptero* getJogador() {return this->jogador;}
 	Tiro* getTiro() {return this->tiro;}
+	
+	vector<Helicoptero>* getInimigos() {
+		return this->inimigos;
+	}
 
 };
 

@@ -39,9 +39,14 @@ AppSettings::AppSettings() {
 	
 	this->velocidadeHelicoptero = 0.0;
 	this->jogador = new Helicoptero();
+	this->inimigos = new vector<Helicoptero>();
 	
 	this->velocidadeTiro = 0.0;
 	this->tiro = new Tiro();
+	
+	this->tempoDeVoo = 0.0;
+	velocidadeHelicopteroInimigo = 0.0;
+	freqTiro = 0.0;
 	
 }
 
@@ -49,17 +54,45 @@ AppSettings::~AppSettings() {
 	// TODO Auto-generated destructor stub
 }
 
+void AppSettings::carregarHelicopteroJogador() {
+	this->jogador->setVelocidade(this->velocidadeHelicoptero);
+	this->tiro->setVelocidade(this->velocidadeTiro);
+	this->jogador->setTempoDeVoo(this->tempoDeVoo);
+	this->jogador->definirCor(0.0, 1.0, 0.0);
+	this->jogador->carregarInformacoes();
+}
+
+void AppSettings::carregarHelicopteroInimigos() {
+	int i = 0;
+	
+	for (i = 0; i < this->quantidadeInimigos; i++) {
+		Helicoptero* inimigo = new Helicoptero();
+		inimigo->setVelocidade(this->velocidadeHelicopteroInimigo);
+		inimigo->setFreqTiro(this->freqTiro);
+		inimigo->definirCor(1.0, 0.0, 0.0);
+		inimigo->mudarEscalaMovimento();
+		inimigo->carregarInformacoes();
+		this->inimigos->push_back(*inimigo);		
+	}
+}
+
+void AppSettings::carregarInformacoesHelicoptero() {
+	this->carregarHelicopteroJogador();
+	this->carregarHelicopteroInimigos();
+	this->setarPosicaoHelicopteros();
+}
+
+// Carregar informações do config.xml do helicoptero do jogador
 void AppSettings::carregarInformacoesHelicoptero(XMLElement* elem) {
 	elem->QueryFloatAttribute("velHelicoptero",  &this->velocidadeHelicoptero);
-	this->jogador->setVelocidade(this->velocidadeHelicoptero);
-	
-	elem->QueryFloatAttribute("velTiro", &this->velocidadeTiro);
-	this->tiro->setVelocidade(this->velocidadeTiro);
-	
-	elem->QueryFloatAttribute("tempoDeVoo", &this->tempoDeVoo);
-	this->jogador->setTempoDeVoo(this->tempoDeVoo);
-	
-	this->jogador->carregarInformacoes();
+	elem->QueryFloatAttribute("velTiro", &this->velocidadeTiro);	
+	elem->QueryFloatAttribute("tempoDeVoo", &this->tempoDeVoo);	
+}
+
+// Carregar informações do config.xml do helicoptero inimigo
+void AppSettings::carregarInformacoesHelicopteroInimigo(XMLElement* elem) {
+	elem->QueryFloatAttribute("freqTiro", &this->freqTiro);	
+	elem->QueryFloatAttribute("velHelicoptero",  &this->velocidadeHelicopteroInimigo);
 }
 
 void AppSettings::carregarInformacoesTiro() {
@@ -120,16 +153,28 @@ void AppSettings::loadConfigXML(char** path) {
 	this->pathArena = total;
 	
 	// Carregar dados do helicoptero
-	XMLElement* helicoptero = aplicacao->FirstChildElement(
+	XMLElement* jogador = aplicacao->FirstChildElement(
 			"helicoptero");
-	if (helicoptero == NULL) {
+	if (jogador == NULL) {
 		printf(
 				"Erro na hora de encontrar Element 'helicoptero'! Finalizando programa...\n");
 		exit(1);
 	}
 	
-	this->carregarInformacoesHelicoptero(helicoptero);
+	this->carregarInformacoesHelicoptero(jogador);
 	this->carregarInformacoesTiro();
+	
+	// Carregar dados helicoptero inimigo
+	XMLElement* inimigo = aplicacao->FirstChildElement(
+			"helicopteroInimigo");
+	if (jogador == NULL) {
+		printf(
+				"Erro na hora de encontrar Element 'helicopteroInimigo'! Finalizando programa...\n");
+		exit(1);
+	}
+	
+	this->carregarInformacoesHelicopteroInimigo(inimigo);
+	
 	doc->~XMLDocument();
 }
 
@@ -452,6 +497,14 @@ void AppSettings::desenharHelicoptero() {
 //	this->helicoptero->setarValores(this->getJogador());
 	this->jogador->desenharHelicoptero();
 	this->jogador->mostrarTiros();
+	
+	Helicoptero* inimigo;
+	int i = 0;
+	for (i = 0; i < this->quantidadeInimigos; i++) {
+		inimigo = &(this->inimigos->at(i));
+		inimigo->desenharHelicoptero();
+		inimigo->mostrarTiros();
+	}
 }
 
 void AppSettings::desenharObjetos() {	
@@ -461,6 +514,21 @@ void AppSettings::desenharObjetos() {
 	this->desenharInimigos();
 	this->desenharObjetosResgate();
 	this->desenharHelicoptero();
+}
+
+void AppSettings::setarPosicaoHelicopteros(){
+	this->getJogador()->setarValores(this->getDadosJogador());
+	Helicoptero* inimigo;
+	
+	cout << "length inimigos = " << this->inimigos->size() << "\n";
+	cout << "length dados inimigos = " << this->dadosInimigos->size() << "\n";
+	
+	int i = 0;
+	for (i = 0; i < this->quantidadeInimigos; i++) {
+		cout << "i = " << i << "\n";
+		inimigo = &(this->inimigos->at(i));
+		inimigo->setarValores(&this->getDadosInimigos()->at(i));
+	}
 }
 
 // Getters and Setters
