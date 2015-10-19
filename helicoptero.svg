@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+	<rect x="0" y="0" width="100" height="120" fill="white" stroke-width="1" stroke="black" id="Arena"/>
+	<rect x="47.5" y="15" width="5" height="15" fill="gray" stroke-width="2" stroke="black" id="Mira" />
+	<rect x="35" y="30" width="30" height="30" fill="green" stroke-width="2" stroke="black" id="Corpo" />
+	<rect x="45" y="60" width="10" height="30" fill="green" stroke-width="2" stroke="black" id="Cauda" />
+	<rect x="40" y="80" width="5" height="20" fill="green" stroke-width="2" stroke="black" id="CaudaEsq" />
+	<rect x="55" y="80" width="5" height="20" fill="green" stroke-width="2" stroke="black" id="CaudaDir" />
+	<circle cx="50" cy="50" r="4" fill="yellow" stroke-width="2" stroke="black" id="CentroHelice" />
+	<polyline fill="blue" stroke="black" stroke-width ="1" points="50,50 52,20 48,20 50,50" id = "HeliceSup"/>
+	<polyline fill="blue" stroke="black" stroke-width ="1" points="50,50 52,80 48,80 50,50" id = "HeliceInf"/>
+	<polyline fill="blue" stroke="black" stroke-width ="1" points="50,50 82,48 82,52 50,50" id = "HeliceDir"/>
+	<polyline fill="blue" stroke="black" stroke-width ="1" points="50,50 22,48 22,52 50,50" id = "HeliceEsq"/>
+ </svg>
