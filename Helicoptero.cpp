@@ -4,6 +4,7 @@ Helicoptero::Helicoptero()
 {
 	// Inicializando velocidades
 	this->velocidadeHelicoptero = 0.0;
+	this->tempoDeVoo = 0.0;
 	
 	// Movimentação
 	this->posX = 0.0;
@@ -249,37 +250,10 @@ void Helicoptero::desenharCentroHelice() {
 	float yTranslated = this->mira->getHeight() + 20;
 	glPushMatrix();
 		glTranslatef(xTranslated, yTranslated, 0.0);
-		this->centroHelice->desenharCircle(this->centroHelice->getR(), 1.0, 1.0, 0.0);
+		this->centroHelice->desenharCircle(1.0, 1.0, 0.0);
 		this->desenharHelices(this->centroHelice);
 	glPopMatrix();
 }
-
-bool Helicoptero::detectarHelicopteroArena (float x, float y, float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito) {
-	cout << "x = " << x << "\n";
-	cout << "y = " << y << "\n";
-	//cout << "raio = " << raio << "\n";
-	cout << "Limite Superior = " << limiteSuperior << "\n";
-	cout << "Limite Inferior = " << limiteInferior << "\n";
-	cout << "Limite Esquerdo = " << limiteEsquerdo << "\n";
-	cout << "Limite Direito = " << limiteDireito << "\n\n";
-	
-	
-	
-	// Helicoptero fora dos limites da arena, o mesmo não deve se movimentar
-	/*if (y <= limiteSuperior || y >= limiteInferior) {
-	
-		return false;
-	}
-
-	if (x <= limiteEsquerdo || x >= limiteDireito) {
-		
-		return false;		
-	}*/
-	
-	return true;
-}
-
-
 
 bool Helicoptero::detectarLimites (float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito) {
 	float x = this->posX;
@@ -289,44 +263,48 @@ bool Helicoptero::detectarLimites (float limiteSuperior, float limiteInferior, f
 	
 	
 	if ((x + comprimentoHelicoptero) > limiteDireito) {
-		cout << "Retornou limite Direito\n";
+		//cout << "Retornou limite Direito\n";
 		this->posX -=  this->velocidadeHelicoptero;
 		return false;
 	}
 	
 	if ((x - comprimentoHelicoptero) < limiteEsquerdo) {
-		cout << "Retornou limite Esquerdo\n";
+		//cout << "Retornou limite Esquerdo\n";
 		this->posX += this->velocidadeHelicoptero;
 		return false;
 	}
 	
-		if ((y + comprimentoHelicoptero) > limiteInferior) {
-		cout << "Retornou limite Direito\n";
+	if ((y + comprimentoHelicoptero) > limiteInferior) {
+		//cout << "Retornou limite Direito\n";
 		this->posY -=  this->velocidadeHelicoptero;
 		return false;
 	}
 	
 	if ((y - comprimentoHelicoptero) < limiteSuperior) {
-		cout << "Retornou limite Esquerdo\n";
+		//cout << "Retornou limite Esquerdo\n";
 		this->posY += this->velocidadeHelicoptero;
 		return false;
 	}
-
 	
 	return true;
-	
 }
 
 void Helicoptero::desenharHelicoptero() {
-	float comprimentoHelicoptero = this->mira->getHeight() + this->corpo->getHeight() + 20 + this->caudaDireita->getHeight();
+	float comprimentoHelicoptero = this->corpo->getHeight() + 20 + this->caudaDireita->getHeight();
 //	float fatorEscala = (1/(2*this->dadosCircle->getR()))*this->escalaHelicoptero;
 
-	float fatorEscala = ((2*this->dadosCircle->getR())/comprimentoHelicoptero)*this->escalaHelicoptero;
+	// Definir o centro do círculo como a posição posX e posY
+
+	float fatorEscala = (((2*this->dadosCircle->getR())/comprimentoHelicoptero)*this->escalaHelicoptero)*0.8;
+
+	float raio = comprimentoHelicoptero/2;
 	
 	this->fatorEscala = fatorEscala;
-	this->cx = this->dadosCircle->getCx();
-	this->cy = this->dadosCircle->getCy();
-	this->raio = this->dadosCircle->getR();
+	this->dadosCircle->setCx(this->posX);
+	this->dadosCircle->setCy(this->posY);
+	//this->cx = this->dadosCircle->getCx();
+	//this->cy = this->dadosCircle->getCy();
+	//this->raio = this->dadosCircle->getR();
 	
 	float fatorEscalaInverso = 1/fatorEscala;
 	float xScale = 0.0;
@@ -352,6 +330,15 @@ void Helicoptero::desenharHelicoptero() {
 			
 			// rotacionar o helicoptero em 90º
 			glRotatef(90.0 + this->anguloGiro, 0.0, 0.0, 1.0);
+			
+			glPushMatrix();
+				xTranslated = 0.0;
+				yTranslated = comprimentoHelicoptero/2;
+				glTranslatef(xTranslated, yTranslated, 0.0);
+				glScalef(1/fatorEscala, 1/fatorEscala, 0.0);
+				// Desenhar círculo do helicoptero
+				this->dadosCircle->desenharCircle(0.0, 1.0, 0.0);
+			glPopMatrix();
 			
 			this->desenharMira();
 			this->desenharCorpo();
@@ -422,7 +409,7 @@ void Helicoptero::rotacionarMiraDireita() {
 			this->anguloMira = 45;
 		} else {
 	
-			this->anguloMira += (5*this->velocidadeHelicoptero);
+			this->anguloMira += (2*this->velocidadeHelicoptero);
 		}
 	}
 }
@@ -434,7 +421,7 @@ void Helicoptero::rotacionarMiraEsquerda() {
 			this->anguloMira = -45;
 		} else {
 	
-			this->anguloMira -= (5*this->velocidadeHelicoptero);
+			this->anguloMira -= (2*this->velocidadeHelicoptero);
 		}
 	}
 	

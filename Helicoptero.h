@@ -22,6 +22,7 @@ class Helicoptero
 protected:
 	// Definindo velocidade do helicoptero
 	float velocidadeHelicoptero;
+	float tempoDeVoo;
 	
 	// Helice
 	float velocidadeHelices;
@@ -102,7 +103,6 @@ public:
 	void desenharHelices(Circle* c);
 	
 	bool detectarLimites(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito);
-	bool detectarHelicopteroArena (float x, float y, float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito);
 	void desenharHelicoptero();
 	
 	//Getters and Setters
@@ -111,6 +111,13 @@ public:
 	}
 	float getVelocidade () {
 		return this->velocidadeHelicoptero;
+	}
+	
+	void setTempoDeVoo (float t) {
+		this->tempoDeVoo = t;
+	}
+	float getTempoDeVoo () {
+		return this->tempoDeVoo;
 	}
 };
 

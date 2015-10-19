@@ -82,48 +82,48 @@ void keyup(unsigned char key, int x, int y)
 void idle(void) {
 	
 	// Detecta os limites da arena
-	Rectangle* arena = appSettings->getArena();
+	Rectangle* dadosArena = appSettings->getDadosArena();
 	
-	float limiteSuperior = arena->getY();
-	float limiteInferior = arena->getY() + arena->getHeight();
-	float limiteEsquerdo = arena->getX();
-	float limiteDireito = arena->getX() + arena->getWidth();
+	float limiteSuperior = dadosArena->getY();
+	float limiteInferior = dadosArena->getY() + dadosArena->getHeight();
+	float limiteEsquerdo = dadosArena->getX();
+	float limiteDireito = dadosArena->getX() + dadosArena->getWidth();
 
 	if(keyStatus['+'] == 1)
     {
-        appSettings->getHelicoptero()->aumentarGiroHelices();
+        appSettings->getJogador()->aumentarGiroHelices();
     }
     
     if(keyStatus['-'] == 1)
     {
     	
-        appSettings->getHelicoptero()->diminuirGiroHelices();
+        appSettings->getJogador()->diminuirGiroHelices();
     }
     
     if(keyStatus['w'] == 1)
     {
     	// so movimenta o helicoptero se o mesmo estiver dentro da arena  	
-        appSettings->getHelicoptero()->moverParaFrente(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito);        
+        appSettings->getJogador()->moverParaFrente(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito);        
     }
     
     if(keyStatus['s'] == 1)
     {
     	// so movimenta o helicoptero se o mesmo estiver dentro da arena  	
-        appSettings->getHelicoptero()->moverParaTras(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito);
+        appSettings->getJogador()->moverParaTras(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito);
     }
 
     if(keyStatus['a'] == 1)
     {
-        appSettings->getHelicoptero()->rotacionarEsquerda();
+        appSettings->getJogador()->rotacionarEsquerda();
     }
 
     if(keyStatus['d'] == 1)
     {
-        appSettings->getHelicoptero()->rotacionarDireita();
+        appSettings->getJogador()->rotacionarDireita();
     }
     
-    appSettings->getHelicoptero()->moverHelice();
-    appSettings->getHelicoptero()->movimentarTiros();
+    appSettings->getJogador()->moverHelice();
+    appSettings->getJogador()->movimentarTiros();
     glutPostRedisplay();
 }
 
@@ -144,30 +144,30 @@ void mouse(int button, int state, int x, int y) {
 		globalY = (float) y;
 		
 		if (button == GLUT_RIGHT_BUTTON) {
-			appSettings->getHelicoptero()->mudarEscalaMovimento();
+			appSettings->getJogador()->mudarEscalaMovimento();
 		}
 		if (button == GLUT_LEFT_BUTTON) {
-			appSettings->getHelicoptero()->realizarTiro(appSettings->getTiro());
+			appSettings->getJogador()->realizarTiro(appSettings->getTiro());
 		}
 	}
 }
 
 void mouseMove (int x, int y) {
-	appSettings->getHelicoptero()->rotacionarMira(x, y);
+	appSettings->getJogador()->rotacionarMira(x, y);
 }
 
 int main(int argc, char** argv) {
 	appSettings->loadConfigXML(argv);
 	appSettings->loadSvgFile();
-	appSettings->getHelicoptero()->setarValores(appSettings->getJogador());
+	appSettings->getJogador()->setarValores(appSettings->getDadosJogador());
 
 	// Iniciando tela e demais variáveis
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 
 	// Setando variáveis da tela
-	DISPLAY_WIDTH = appSettings->getArena()->getWidth();
-	DISPLAY_HEIGHT = appSettings->getArena()->getHeight();
+	DISPLAY_WIDTH = appSettings->getDadosArena()->getWidth();
+	DISPLAY_HEIGHT = appSettings->getDadosArena()->getHeight();
 
 	glutInitWindowSize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
 	glutInitWindowPosition(100, 100);

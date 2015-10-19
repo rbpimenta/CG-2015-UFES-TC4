@@ -61,10 +61,12 @@ void Circle::setValues(XMLElement* elem) {
 	this->setFill(fill);
 }
 
-void Circle::desenharCircle (float radius, float R, float G, float B) {
+void Circle::desenharCircle (float R, float G, float B) {
 int i = 0;
 	int num_segments = 100;
 	float twicePi = 2*M_PI;
+	
+	float radius = this->getR();
 		
 	glColor3f(R, G, B);
 	// Desenhar a parte interna do círculo

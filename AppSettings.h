@@ -21,21 +21,23 @@ using namespace std;
 class AppSettings {
 protected:
 	string pathArena;
-	Rectangle* arena;
+	Rectangle* dadosArena;
 	Rectangle* postoAbastecimento;
-	Circle* jogador;
-	vector<Circle>* inimigos;
+	Circle* dadosJogador;
+	vector<Circle>* dadosInimigos;
 	int quantidadeInimigos;
 
 	vector<Circle>* objetoResgate;
 	int quantidadeObjetosResgate;
 	
-	Helicoptero* helicoptero;
+	// variavel que representa o helicoptero do jogador
+	Helicoptero* jogador;
 	
 	Tiro* tiro;
 	
 	float velocidadeHelicoptero;
 	float velocidadeTiro;
+	float tempoDeVoo;
 
 private:
 	void detectarLimitesArena(float x, float y, float width, float height);
@@ -72,14 +74,17 @@ public:
 	// Getters and Setters
 	string getPathArena();
 	void setPathArena(string pathArena);
-	Rectangle* getArena();
-	void setArena(Rectangle* arena);
+	
+	Rectangle* getDadosArena();
+	void setDadosArena(Rectangle* dadosArena);
 	Rectangle* getPostoAbastecimento();
 	void setPostoAbastecimento(Rectangle* postoAbastecimento);
-	Circle* getJogador();
-	void setJogador (Circle* jogador);
-	vector<Circle>* getInimigos();
-	void setInimigos(vector<Circle>* inimigos);
+	
+	Circle* getDadosJogador();
+	void setDadosJogador (Circle* dadosJogador);
+	
+	vector<Circle>* getDadosInimigos();
+	void setDadosInimigos (vector<Circle>* dadosInimigos);
 	int getQuantidadeInimigos();
 	void setQuantidadeInimigos(int quantidadeInimigos);
 
@@ -88,7 +93,7 @@ public:
 	int getQuantidadeObjetosResgate();
 	void setQuantidadeObjetosResgate (int quantidadeObjetoResgate);
 	
-	Helicoptero* getHelicoptero() {return this->helicoptero;}
+	Helicoptero* getJogador() {return this->jogador;}
 	Tiro* getTiro() {return this->tiro;}
 
 };

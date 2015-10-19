@@ -34,7 +34,7 @@ public:
 	void setValues(XMLElement* elem);
 	void showValues();
 	
-	void desenharCircle(float radius, float R, float G, float B);
+	void desenharCircle(float R, float G, float B);
 
 
 	// Getters and Setters

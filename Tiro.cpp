@@ -98,7 +98,7 @@ void Tiro::desenharTiro() {
 					yTranslated = -this->miraHeight;
 					glTranslatef(xTranslated, yTranslated,0.0);
 				
-					this->tiro->desenharCircle(this->tiro->getR(), 0.0, 0.0, 0.0);
+					this->tiro->desenharCircle(0.0, 0.0, 0.0);
 				/*
 				Add to work on linux
 				glPopMatrix();

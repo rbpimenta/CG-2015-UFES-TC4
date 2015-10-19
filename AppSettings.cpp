@@ -27,18 +27,18 @@ using namespace tinyxml2;
 AppSettings::AppSettings() {
 	// TODO Auto-generated constructor stub
 	this->pathArena = "";
-	this->arena = new Rectangle();
+	this->dadosArena = new Rectangle();
 	this->postoAbastecimento = new Rectangle();
-	this->jogador = new Circle();
+	this->dadosJogador = new Circle();
 
-	this->inimigos = new vector<Circle>();
+	this->dadosInimigos = new vector<Circle>();
 	this->quantidadeInimigos = 0;
 	
 	this->objetoResgate = new vector<Circle>();
 	this->quantidadeObjetosResgate = 0;
 	
 	this->velocidadeHelicoptero = 0.0;
-	this->helicoptero = new Helicoptero();
+	this->jogador = new Helicoptero();
 	
 	this->velocidadeTiro = 0.0;
 	this->tiro = new Tiro();
@@ -51,12 +51,15 @@ AppSettings::~AppSettings() {
 
 void AppSettings::carregarInformacoesHelicoptero(XMLElement* elem) {
 	elem->QueryFloatAttribute("velHelicoptero",  &this->velocidadeHelicoptero);
-	this->helicoptero->setVelocidade(this->velocidadeHelicoptero);
+	this->jogador->setVelocidade(this->velocidadeHelicoptero);
 	
 	elem->QueryFloatAttribute("velTiro", &this->velocidadeTiro);
 	this->tiro->setVelocidade(this->velocidadeTiro);
 	
-	this->helicoptero->carregarInformacoes();
+	elem->QueryFloatAttribute("tempoDeVoo", &this->tempoDeVoo);
+	this->jogador->setTempoDeVoo(this->tempoDeVoo);
+	
+	this->jogador->carregarInformacoes();
 }
 
 void AppSettings::carregarInformacoesTiro() {
@@ -166,7 +169,7 @@ void AppSettings::loadSvgFile() {
 
 		// Carregar arena
 		if (id == "Arena") {
-			this->arena->setValues(rectElem);
+			this->dadosArena->setValues(rectElem);
 		}
 
 		// Carregar Posto de abastecimento
@@ -195,15 +198,15 @@ void AppSettings::loadSvgFile() {
 		id = aux;
 
 		if (id == "Jogador") {
-			this->jogador->setValues(circleElem);
-			this->checkCircles(this->jogador);
+			this->dadosJogador->setValues(circleElem);
+			this->checkCircles(this->dadosJogador);
 		}
 
 		if (id == "Inimigo") {
 			Circle* enemyCircle = new Circle();
 			enemyCircle->setValues(circleElem);
 			this->checkCircles(enemyCircle);
-			this->inimigos->push_back(*enemyCircle);
+			this->dadosInimigos->push_back(*enemyCircle);
 			this->quantidadeInimigos++;
 		}
 
@@ -227,9 +230,9 @@ void AppSettings::loadSvgFile() {
 
 void AppSettings::showValues() {
 	cout << "Imprimindo AppSettings\n";
-	this->arena->showValues();
+	this->dadosArena->showValues();
 	this->postoAbastecimento->showValues();
-	this->jogador->showValues();
+	this->dadosJogador->showValues();
 
 	int i = 0;
 
@@ -267,11 +270,11 @@ void AppSettings::checkCircles (Circle* circle) {
 }
 
 void AppSettings::detectarLimitesArena(float x, float y, float width, float height) {
-	Rectangle* arena = this->getArena();
-	float limiteSuperior = arena->getY();
-	float limiteInferior = arena->getY() + arena->getHeight();
-	float limiteEsquerdo = arena->getX();
-	float limiteDireito = arena->getX() + arena->getWidth();
+	Rectangle* dadosArena = this->getDadosArena();
+	float limiteSuperior = dadosArena->getY();
+	float limiteInferior = dadosArena->getY() + dadosArena->getHeight();
+	float limiteEsquerdo = dadosArena->getX();
+	float limiteDireito = dadosArena->getX() + dadosArena->getWidth();
 
 
 	if (y < limiteSuperior || y > limiteInferior
@@ -289,7 +292,7 @@ void AppSettings::detectarLimitesArena(float x, float y, float width, float heig
 }
 
 void AppSettings::detectarJogador (float x, float y) {
-	detectarCircle(x, y, this->getJogador());
+	detectarCircle(x, y, this->getDadosJogador());
 }
 
 void AppSettings::detectarInimigo (float x, float y) {
@@ -298,7 +301,7 @@ void AppSettings::detectarInimigo (float x, float y) {
 	int i = 0;
 
 	for (i = 0; i < this->quantidadeInimigos; i ++) {
-		aux = this->inimigos->at(i);
+		aux = this->dadosInimigos->at(i);
 		detectarCircle(x, y, &aux);
 	}
 }
@@ -347,7 +350,7 @@ void detectarRectangle (Rectangle* r, float x, float y) {
 }
 
 void AppSettings::detectarArena (float x, float y) {
-	detectarRectangle(this->arena, x, y);
+	detectarRectangle(this->dadosArena, x, y);
 }
 
 void AppSettings::detectarPostoDeAbastecimento (float x, float y) {
@@ -381,7 +384,7 @@ void desenharRectangle(Rectangle* r, float R, float G, float B) {
 }
 
 void AppSettings::desenharArena() {
-	desenharRectangle(this->getArena(), 1.0, 1.0, 1.0);
+	desenharRectangle(this->getDadosArena(), 1.0, 1.0, 1.0);
 }
 
 void AppSettings::desenharPostoAbastecimento() {
@@ -421,7 +424,7 @@ void desenharCircle (Circle* c, float R, float G, float B) {
 }
 
 void AppSettings::desenharJogador() {
-	desenharCircle(this->jogador, 0.0, 1.0, 0.0);
+//	desenharCircle(this->dadosJogador, 0.0, 1.0, 0.0);
 }
 
 void AppSettings::desenharInimigos() {
@@ -429,7 +432,7 @@ void AppSettings::desenharInimigos() {
 	Circle it;
 	
 	for (j = 0; j < this->getQuantidadeInimigos(); j++) {
-		it = this->getInimigos()->at(j);
+		it = this->getDadosInimigos()->at(j);
 		desenharCircle(&it, 1.0, 0.0, 0.0);
 	}
 }
@@ -447,8 +450,8 @@ void AppSettings::desenharObjetosResgate() {
 void AppSettings::desenharHelicoptero() {
 	
 //	this->helicoptero->setarValores(this->getJogador());
-	this->helicoptero->desenharHelicoptero();
-	this->helicoptero->mostrarTiros();
+	this->jogador->desenharHelicoptero();
+	this->jogador->mostrarTiros();
 }
 
 void AppSettings::desenharObjetos() {	
@@ -469,12 +472,12 @@ void AppSettings::setPathArena(string pathArena) {
 	this->pathArena = pathArena;
 }
 
-Rectangle* AppSettings::getArena() {
-	return this->arena;
+Rectangle* AppSettings::getDadosArena() {
+	return this->dadosArena;
 }
 
-void AppSettings::setArena(Rectangle* arena) {
-	this->arena = arena;
+void AppSettings::setDadosArena(Rectangle* dadosArena) {
+	this->dadosArena = dadosArena;
 }
 
 Rectangle* AppSettings::getPostoAbastecimento() {
@@ -485,20 +488,20 @@ void AppSettings::setPostoAbastecimento(Rectangle* postoAbastecimento) {
 	this->postoAbastecimento = postoAbastecimento;
 }
 
-Circle* AppSettings::getJogador() {
-	return this->jogador;
+Circle* AppSettings::getDadosJogador() {
+	return this->dadosJogador;
 }
 
-void AppSettings::setJogador(Circle* jogador) {
-	this->jogador = jogador;
+void AppSettings::setDadosJogador(Circle* dadosJogador) {
+	this->dadosJogador = dadosJogador;
 }
 
-vector<Circle>* AppSettings::getInimigos() {
-	return this->inimigos;
+vector<Circle>* AppSettings::getDadosInimigos() {
+	return this->dadosInimigos;
 }
 
-void AppSettings::setInimigos(vector<Circle>* inimigos) {
-	this->inimigos = inimigos;
+void AppSettings::setDadosInimigos(vector<Circle>* dadosInimigos) {
+	this->dadosInimigos = dadosInimigos;
 }
 
 int AppSettings::getQuantidadeInimigos() {
