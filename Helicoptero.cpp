@@ -5,7 +5,11 @@ Helicoptero::Helicoptero()
 	// Inicializando velocidades
 	this->velocidadeHelicoptero = 0.0;
 	
-	this->tempoDeVoo = 0.0;
+	this->tipo = "";
+	this->foiAtingido = false;
+	
+	this->tempo = new Time();
+	this->temCombustivel = true;
 	
 	this->freqTiro = 0.0;
 	
@@ -167,7 +171,7 @@ void Helicoptero::desenharMira() {
 			yTranslated = -this->mira->getHeight();
 			glTranslatef(xTranslated, yTranslated,0.0);
 
-			this->mira->desenharRectangle(this->mira->getHeight(), this->mira->getWidth(), this->color[0], this->color[1], this->color[2]);
+			this->mira->desenharRectangle(this->mira->getHeight(), this->mira->getWidth(), this->color[0], this->color[1], this->color[2], true);
 		glPopMatrix();
 		/*
 	Add to work on linux
@@ -180,7 +184,7 @@ void Helicoptero::desenharCorpo() {
 	float yTranslated = this->mira->getHeight();
 	glPushMatrix();
 		glTranslatef(xTranslated, yTranslated, 0.0);
-		this->corpo->desenharRectangle(this->corpo->getHeight(), this->corpo->getWidth(), this->color[0], this->color[1], this->color[2]);
+		this->corpo->desenharRectangle(this->corpo->getHeight(), this->corpo->getWidth(), this->color[0], this->color[1], this->color[2], true);
 	glPopMatrix();
 }
 
@@ -189,7 +193,7 @@ void Helicoptero::desenharCaudaDireita() {
 	float yTranslated = this->mira->getHeight() + this->corpo->getHeight() + 20;
 	glPushMatrix();
 		glTranslatef(xTranslated, yTranslated, 0.0);
-		this->caudaDireita->desenharRectangle(this->caudaDireita->getHeight(), this->caudaDireita->getWidth(), this->color[0], this->color[1], this->color[2]);
+		this->caudaDireita->desenharRectangle(this->caudaDireita->getHeight(), this->caudaDireita->getWidth(), this->color[0], this->color[1], this->color[2], true);
 	glPopMatrix();
 }
 
@@ -198,7 +202,7 @@ void Helicoptero::desenharCaudaEsquerda() {
 	float yTranslated = this->mira->getHeight() + this->corpo->getHeight() + 20;
 	glPushMatrix();
 		glTranslatef(xTranslated, yTranslated, 0.0);
-		this->caudaEsquerda->desenharRectangle(this->caudaEsquerda->getHeight(), this->caudaEsquerda->getWidth(), this->color[0], this->color[1], this->color[2]);
+		this->caudaEsquerda->desenharRectangle(this->caudaEsquerda->getHeight(), this->caudaEsquerda->getWidth(), this->color[0], this->color[1], this->color[2], true);
 	glPopMatrix();
 }
 
@@ -210,7 +214,7 @@ void Helicoptero::desenharCaudaPrincipal() {
 		glTranslatef(xTranslated, yTranslated, 0.0);
 		
 		// desenhar cauda principal
-		this->cauda->desenharRectangle(this->cauda->getHeight(), this->cauda->getWidth(), this->color[0], this->color[1], this->color[2]);		
+		this->cauda->desenharRectangle(this->cauda->getHeight(), this->cauda->getWidth(), this->color[0], this->color[1], this->color[2], true);		
 	glPopMatrix();
 	
 }
@@ -296,6 +300,16 @@ bool Helicoptero::detectarLimites (float limiteSuperior, float limiteInferior, f
 }
 
 void Helicoptero::desenharHelicoptero() {
+	if (this->foiAtingido == true) {
+		return;
+	}
+	
+	if (this->tipo == "jogador") {
+		if (this->tempo->tempoAtual <= 0) {
+			//cout << "Tempo Esgotado!\n";
+		}
+	}
+	
 	float comprimentoHelicoptero = this->corpo->getHeight() + 20 + this->caudaDireita->getHeight();
 
 
@@ -388,6 +402,10 @@ void Helicoptero::rotacionarDireita() {
 }
 
 void Helicoptero::mudarEscalaMovimento() {
+	if (this->temCombustivel == false) {
+		return;
+	}
+	
 	if (this->escalaHelicoptero == 1.0) {
 		this->escalaHelicoptero = 1.5;
 		this->enableMovimento = true;
@@ -451,13 +469,109 @@ void Helicoptero::mostrarTiros() {
 	}
 }
 
-void Helicoptero::movimentarTiros() {
+void Helicoptero::movimentarTiros(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito) {
 	int i = 0;
+	int totalTiros = this->tiros->size();
+	int tirosExcluidos[totalTiros];
+	
 	Tiro* t;
 	if (!this->tiros->empty()) {
-		for (i = 0; i < (int) this->tiros->size(); i++) {
+		for (i = 0; i < totalTiros; i++) {
 			t = &(this->tiros->at(i));
-			t->movimentarParaFrente();
+			// Verifica se o tiro ainda está na tela
+			if (t->verificarLimites(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito) == true) {
+				t->movimentarParaFrente();
+			} else {
+				this->tiros->erase(this->tiros->begin() + i);
+				totalTiros--;
+				i--;
+			}
+		}
+	}
+}
+
+void Helicoptero::verificaTirosJogador(vector<Helicoptero>* inimigos, float quantidadeInimigos) {
+	int i = 0;
+	int j = 0;
+	Helicoptero* inimigo;
+	Tiro* t;
+	Ponto *centro, *superior, *inferior, *esquerdo, *direito;
+	
+	for (i = 0; i < quantidadeInimigos; i++) {
+		inimigo = &(inimigos->at(i));
+		for (j = 0; j < this->tiros->size(); j++) {
+			t = &(this->tiros->at(j));
+			
+			// Definindo pontos de verificação
+			centro = new Ponto(t->getPosX(), t->getPosY());
+			superior = new Ponto (t->getPosX(), t->getPosY() - t->tiro->getR());
+			inferior = new Ponto (t->getPosX(), t->getPosY() + t->tiro->getR());
+			direito = new Ponto (t->getPosX() + t->tiro->getR(), t->getPosY());
+			esquerdo = new Ponto (t->getPosX() - t->tiro->getR(), t->getPosY());
+			
+			// verifica centro do tiro
+			if (inimigo->dadosCircle->internoCircunferencia(centro->getX(), centro->getY()) == true
+				// verifica parte supeior
+				|| inimigo->dadosCircle->internoCircunferencia(superior->getX(), superior->getY()) == true
+				//verifica parte inferior
+				|| inimigo->dadosCircle->internoCircunferencia(inferior->getX(), inferior->getY()) == true
+				// verifica lado direito
+				|| inimigo->dadosCircle->internoCircunferencia(direito->getX(), direito->getY()) == true
+				// verifica lado esquerdo
+				|| inimigo->dadosCircle->internoCircunferencia(esquerdo->getX(), esquerdo->getY()) == true) {
+				
+				inimigo->foiAtingido = true;
+			}
+			
+			free(centro);
+			free(superior);
+			free(inferior);
+			free(direito);
+			free(esquerdo);
+		}
+	}
+}
+
+void Helicoptero::atualizarCombustivel(Rectangle* postoAbastecimento) {
+	//cout << "tempo Maximo = " << this->tempo->tempoMaximo << "\n";
+	int currentTime = (int) glutGet(GLUT_ELAPSED_TIME)/1000;
+	cout << "current Time = " << currentTime << "\n";
+	
+	// calcular a distancia entre os dois tempos
+	int diferenca = currentTime - this->tempo->tempoUltimaCarga;
+	cout << "diferenca = " << diferenca << "\n";
+	
+	// tempo atual sempre será a diferenca entre o tempo maximo e a diferenca acima
+	this->tempo->tempoAtual = this->tempo->tempoMaximo - diferenca;
+	cout << "tempoAtual = " << this->tempo->tempoAtual << "\n";
+	
+	// Se o tempo acabar o helicoptero aterrisa e a variavel temCombustivel é setada para false
+	if (this->tempo->tempoAtual <= 0) {
+		//cout << "Combustível esgotado!\n";
+		if (this->temCombustivel == true) {
+			this->mudarEscalaMovimento();
+			this->temCombustivel = false;
+		}		
+	}
+	
+	// Situação para recarregar o combustível
+	if (this->enableMovimento == false &&
+	postoAbastecimento->detectarRectangle(this->dadosCircle->getCx(), this->dadosCircle->getCy())) {
+		this->tempo->tempoUltimaCarga = currentTime;
+		this->tempo->tempoAtual = this->tempo->tempoMaximo;
+		this->temCombustivel = true;
+	}
+}
+
+void Helicoptero::resgatarObjeto(vector<ObjetoResgate>* objetosResgate) {
+	int i = 0;
+	ObjetoResgate* obj;
+	
+	
+	for (i = 0; i < (int) objetosResgate->size(); i++) {
+		obj = &(objetosResgate->at(i));
+		if (obj->dadosObjetoResgate->internoCircunferencia(this->posX, this->posY) == true ){
+			obj->objetoFoiResgatado();
 		}
 	}
 }

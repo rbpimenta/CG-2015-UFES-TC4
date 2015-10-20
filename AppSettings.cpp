@@ -34,7 +34,8 @@ AppSettings::AppSettings() {
 	this->dadosInimigos = new vector<Circle>();
 	this->quantidadeInimigos = 0;
 	
-	this->objetoResgate = new vector<Circle>();
+	this->dadosObjetoResgate = new vector<Circle>();
+	this->objetosResgate = new vector<ObjetoResgate>();
 	this->quantidadeObjetosResgate = 0;
 	
 	this->velocidadeHelicoptero = 0.0;
@@ -48,52 +49,13 @@ AppSettings::AppSettings() {
 	velocidadeHelicopteroInimigo = 0.0;
 	freqTiro = 0.0;
 	
+	this->combustivel = new Rectangle();
 }
 
 AppSettings::~AppSettings() {
 	// TODO Auto-generated destructor stub
 }
 
-void AppSettings::carregarHelicopteroJogador() {
-	this->jogador->setVelocidade(this->velocidadeHelicoptero);
-	this->tiro->setVelocidade(this->velocidadeTiro);
-	this->jogador->setTempoDeVoo(this->tempoDeVoo);
-	this->jogador->definirCor(0.0, 1.0, 0.0);
-	this->jogador->carregarInformacoes();
-}
-
-void AppSettings::carregarHelicopteroInimigos() {
-	int i = 0;
-	
-	for (i = 0; i < this->quantidadeInimigos; i++) {
-		Helicoptero* inimigo = new Helicoptero();
-		inimigo->setVelocidade(this->velocidadeHelicopteroInimigo);
-		inimigo->setFreqTiro(this->freqTiro);
-		inimigo->definirCor(1.0, 0.0, 0.0);
-		inimigo->mudarEscalaMovimento();
-		inimigo->carregarInformacoes();
-		this->inimigos->push_back(*inimigo);		
-	}
-}
-
-void AppSettings::carregarInformacoesHelicoptero() {
-	this->carregarHelicopteroJogador();
-	this->carregarHelicopteroInimigos();
-	this->setarPosicaoHelicopteros();
-}
-
-// Carregar informações do config.xml do helicoptero do jogador
-void AppSettings::carregarInformacoesHelicoptero(XMLElement* elem) {
-	elem->QueryFloatAttribute("velHelicoptero",  &this->velocidadeHelicoptero);
-	elem->QueryFloatAttribute("velTiro", &this->velocidadeTiro);	
-	elem->QueryFloatAttribute("tempoDeVoo", &this->tempoDeVoo);	
-}
-
-// Carregar informações do config.xml do helicoptero inimigo
-void AppSettings::carregarInformacoesHelicopteroInimigo(XMLElement* elem) {
-	elem->QueryFloatAttribute("freqTiro", &this->freqTiro);	
-	elem->QueryFloatAttribute("velHelicoptero",  &this->velocidadeHelicopteroInimigo);
-}
 
 void AppSettings::carregarInformacoesTiro() {
 	this->tiro->carregarInformacoes();
@@ -174,7 +136,6 @@ void AppSettings::loadConfigXML(char** path) {
 	}
 	
 	this->carregarInformacoesHelicopteroInimigo(inimigo);
-	
 	doc->~XMLDocument();
 }
 
@@ -257,9 +218,17 @@ void AppSettings::loadSvgFile() {
 
 		if (id == "ObjetoResgate") {
 			Circle* rescueObjectCircle = new Circle();
+			ObjetoResgate* obj = new ObjetoResgate();
+			
 			rescueObjectCircle->setValues(circleElem);
 			this->checkCircles(rescueObjectCircle);
-			this->objetoResgate->push_back(*rescueObjectCircle);
+			this->dadosObjetoResgate->push_back(*rescueObjectCircle);
+			
+			// seta os dados do objeto resgate com os setados anteriormente
+			obj->dadosObjetoResgate = rescueObjectCircle;
+			// adiciona o objeto no vetor de objetos Resgate
+			this->objetosResgate->push_back(*obj);
+			
 			this->quantidadeObjetosResgate++;
 		}
 
@@ -356,50 +325,27 @@ void AppSettings::detectarObjetoResgate (float x, float y) {
 	int i = 0;
 	
 	for (i = 0; i < this->quantidadeObjetosResgate; i ++) {
-		aux = this->objetoResgate->at(i);
+		aux = this->dadosObjetoResgate->at(i);
 		detectarCircle(x, y, &aux);
 	}
 }
 
-bool internoCircunferencia(float x, float y, Circle* circle) {
-
-	float distX = pow ((circle->getCx() - x), 2.0);
-	float distY = pow ((circle->getCy() - y), 2.0);
-	float rPow2 = pow (circle->getR(), 2.0);
-	float soma = distX + distY;
-
-	if (soma <= rPow2) {
-		return true;
-	}
-
-	return false;
-}
-
 void AppSettings::detectarCircle (float x, float y, Circle* c) {
-	if (internoCircunferencia(x, y, c)) {
+	if (c->internoCircunferencia(x, y)) {
 		cout << "id=" << c->getId() << "\n";
 	}
 }
 
-void detectarRectangle (Rectangle* r, float x, float y) {
-	if (x > r->getX()
-		&& x < (r->getX() + r->getWidth())) {
-
-		if (y > r->getY()
-			&& y < (r->getY() + r->getHeight())) {
-
-			cout << "id=" <<  r->getId() << "\n";
-		}
-	}
-
-}
-
 void AppSettings::detectarArena (float x, float y) {
-	detectarRectangle(this->dadosArena, x, y);
+	if (this->dadosArena->detectarRectangle(x, y)) {
+		cout << "id=" <<  this->dadosArena->getId() << "\n";
+	}
 }
 
 void AppSettings::detectarPostoDeAbastecimento (float x, float y) {
-	detectarRectangle(this->postoAbastecimento, x, y);
+	if (this->postoAbastecimento->detectarRectangle(x, y)) {
+		cout << "id=" <<  this->postoAbastecimento->getId() << "\n";
+	}
 }
 
 void AppSettings::detectarObjetos(float x, float y) {
@@ -465,7 +411,6 @@ void desenharCircle (Circle* c, float R, float G, float B) {
 							0.0);//output vertex
 			}
 		glEnd();
-	
 }
 
 void AppSettings::desenharJogador() {
@@ -478,17 +423,21 @@ void AppSettings::desenharInimigos() {
 	
 	for (j = 0; j < this->getQuantidadeInimigos(); j++) {
 		it = this->getDadosInimigos()->at(j);
-		desenharCircle(&it, 1.0, 0.0, 0.0);
+		it.desenharCircleSemTransformacao(1.0, 0.0, 0.0);
+		//desenharCircle(&it, 1.0, 0.0, 0.0);
 	}
 }
 
 void AppSettings::desenharObjetosResgate() {
 	int j = 0;
-	Circle it;
+	ObjetoResgate* it;
 	
 	for (j = 0; j < this->getQuantidadeObjetosResgate(); j++) {
-		it = this->getObjetoResgate()->at(j);
-		desenharCircle(&it, 0.0, 0.0, 1.0);
+		it = &(this->objetosResgate->at(j));
+		
+		if (it->objetoResgatado == false) {
+			it->desenharObjetoResgate();
+		}
 	}
 }
 
@@ -510,8 +459,9 @@ void AppSettings::desenharHelicoptero() {
 void AppSettings::desenharObjetos() {	
 	this->desenharArena();
 	this->desenharPostoAbastecimento();
-	this->desenharJogador();
-	this->desenharInimigos();
+	this->desenharCombustivel();
+//	this->desenharJogador();
+//	this->desenharInimigos();
 	this->desenharObjetosResgate();
 	this->desenharHelicoptero();
 }
@@ -519,16 +469,140 @@ void AppSettings::desenharObjetos() {
 void AppSettings::setarPosicaoHelicopteros(){
 	this->getJogador()->setarValores(this->getDadosJogador());
 	Helicoptero* inimigo;
-	
-	cout << "length inimigos = " << this->inimigos->size() << "\n";
-	cout << "length dados inimigos = " << this->dadosInimigos->size() << "\n";
-	
+
 	int i = 0;
 	for (i = 0; i < this->quantidadeInimigos; i++) {
 		cout << "i = " << i << "\n";
 		inimigo = &(this->inimigos->at(i));
 		inimigo->setarValores(&this->getDadosInimigos()->at(i));
 	}
+}
+
+void AppSettings::carregarHelicopteroJogador() {
+	this->jogador->setVelocidade(this->velocidadeHelicoptero);
+	this->tiro->setVelocidade(this->velocidadeTiro);
+	this->jogador->setTempoDeVoo(this->tempoDeVoo);
+	this->jogador->definirCor(0.0, 1.0, 0.0);
+	this->jogador->carregarInformacoes();
+	this->jogador->setTipo("jogador");
+}
+
+void AppSettings::carregarHelicopteroInimigos() {
+	int i = 0;
+	
+	for (i = 0; i < this->quantidadeInimigos; i++) {
+		Helicoptero* inimigo = new Helicoptero();
+		inimigo->setVelocidade(this->velocidadeHelicopteroInimigo);
+		inimigo->setFreqTiro(this->freqTiro);
+		inimigo->definirCor(1.0, 0.0, 0.0);
+		inimigo->mudarEscalaMovimento();
+		inimigo->carregarInformacoes();
+		inimigo->setTipo("inimigo");
+		this->inimigos->push_back(*inimigo);		
+	}
+}
+
+void AppSettings::carregarInformacoesHelicoptero() {
+	this->carregarHelicopteroJogador();
+	this->carregarHelicopteroInimigos();
+	this->setarPosicaoHelicopteros();
+}
+
+// Carregar informações do config.xml do helicoptero do jogador
+void AppSettings::carregarInformacoesHelicoptero(XMLElement* elem) {
+	elem->QueryFloatAttribute("velHelicoptero",  &this->velocidadeHelicoptero);
+	elem->QueryFloatAttribute("velTiro", &this->velocidadeTiro);	
+	elem->QueryFloatAttribute("tempoDeVoo", &this->tempoDeVoo);	
+}
+
+// Carregar informações do config.xml do helicoptero inimigo
+void AppSettings::carregarInformacoesHelicopteroInimigo(XMLElement* elem) {
+	elem->QueryFloatAttribute("freqTiro", &this->freqTiro);	
+	elem->QueryFloatAttribute("velHelicoptero",  &this->velocidadeHelicopteroInimigo);
+}
+
+void AppSettings::verificaTiros() {
+	// verifica tiros jogador
+	this->jogador->verificaTirosJogador(this->inimigos, this->quantidadeInimigos);
+}
+
+void AppSettings::carregarDadosCombustivel() {
+	// set Id
+	this->combustivel->setId("combustivel");
+
+	// set X
+	float x = this->dadosArena->getX() + 20;
+	this->combustivel->setX(x);
+
+
+	// set Y
+	float y = this->dadosArena->getY() + this->dadosArena->getHeight() - 60;
+	this->combustivel->setY(y);
+
+	// set Widht
+	this->combustivel->setWidth(60);
+
+	// set Height
+	this->combustivel->setHeight(30);
+
+	// set Fill
+	this->combustivel->setFill("");
+
+	// set stroke_width
+	this->combustivel->setStrokeWidth(0);
+
+	// set stroke
+	this->combustivel->setStroke("");
+}
+
+void AppSettings::desenharCombustivel() {
+	float xTranslated;
+	float yTranslated;
+	float R = 0.0, G = 1.0, B = 0.0;
+	
+	// desenhar bateria
+	glPushMatrix(); // Mover-se para metade da bateria
+		// verde -> 50% - 100%
+		// amarelho -> 10% - 50%
+		// vermelho -> 0% - 10%
+		float tempoAtual = (float) this->getJogador()->getTempo()->tempoAtual;
+		float tempoMaximo = (float) this->getJogador()->getTempo()->tempoMaximo;
+		
+		float proporcao = tempoAtual/tempoMaximo;
+		
+		if (proporcao > 0.5 && proporcao <= 1.0) {
+			R = 0;
+			G = 1;
+			B = 0;
+			
+		} else if (proporcao > 0.1 && proporcao <= 0.5) {
+			R = 1;
+			G = 1;
+			B = 0;
+		} else if (proporcao > 0 &&proporcao <= 0.1) {
+			R = 1;
+			G = 0;
+			B = 0;
+		} else if (proporcao < 0) {
+			glPopMatrix();
+		}
+		float w = this->combustivel->getWidth()*proporcao;
+	
+		
+		xTranslated = (this->combustivel->getX() + this->combustivel->getWidth()*proporcao)/2;
+		yTranslated = this->combustivel->getY();
+		
+		glTranslated(xTranslated, yTranslated, 0.0);		
+		this->combustivel->desenharRectangle(this->combustivel->getHeight(), w, R, G, B, false);
+	glPopMatrix();
+	
+	// desenharContorno
+	glPushMatrix();
+		xTranslated = (this->combustivel->getX() + this->combustivel->getWidth())/2;
+		yTranslated = this->combustivel->getY();
+		glTranslated(xTranslated, yTranslated, 0.0);
+		this->combustivel->desenharContorno(0.0, 0.0, 0.0);
+	glPopMatrix();
 }
 
 // Getters and Setters
@@ -580,12 +654,12 @@ void AppSettings::setQuantidadeInimigos(int quantidadeInimigos) {
 	this->quantidadeInimigos = quantidadeInimigos;
 }
 
-vector<Circle>* AppSettings::getObjetoResgate() {
-	return this->objetoResgate;
+vector<Circle>* AppSettings::getDadosObjetoResgate() {
+	return this->dadosObjetoResgate;
 }
 
-void AppSettings::setObjetoResgate(vector<Circle>* objetoResgate) {
-	this->objetoResgate = objetoResgate;
+void AppSettings::setDadosObjetoResgate(vector<Circle>* dadosObjetoResgate) {
+	this->dadosObjetoResgate = dadosObjetoResgate;
 }
 
 int AppSettings::getQuantidadeObjetosResgate() {

@@ -4,8 +4,8 @@
 CPP      = g++.exe
 CC       = gcc.exe
 WINDRES  = windres.exe
-OBJ      = AppSettings.o Circle.o Helicoptero.o main.o Polyline.o Ponto.o Rectangle.o tinyxml2.o Tiro.o
-LINKOBJ  = AppSettings.o Circle.o Helicoptero.o main.o Polyline.o Ponto.o Rectangle.o tinyxml2.o Tiro.o
+OBJ      = AppSettings.o Circle.o Helicoptero.o main.o Polyline.o Ponto.o Rectangle.o tinyxml2.o Tiro.o Time.o ObjetoResgate.o
+LINKOBJ  = AppSettings.o Circle.o Helicoptero.o main.o Polyline.o Ponto.o Rectangle.o tinyxml2.o Tiro.o Time.o ObjetoResgate.o
 LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW32/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW32/mingw32/lib" -static-libstdc++ -static-libgcc "C:/Program Files (x86)/Dev-Cpp/MinGW32/lib/libopengl32.a" "C:/Program Files (x86)/Dev-Cpp/MinGW32/lib/libglu32.a" "C:/Program Files (x86)/Dev-Cpp/MinGW32/lib/libglut32.a" 
 INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW32/include"
 CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW32/lib/gcc/mingw32/4.7.2/include/c++"
@@ -50,3 +50,9 @@ tinyxml2.o: tinyxml2.cpp
 
 Tiro.o: Tiro.cpp
 	$(CPP) -c Tiro.cpp -o Tiro.o $(CXXFLAGS)
+
+Time.o: Time.cpp
+	$(CPP) -c Time.cpp -o Time.o $(CXXFLAGS)
+
+ObjetoResgate.o: ObjetoResgate.cpp
+	$(CPP) -c ObjetoResgate.cpp -o ObjetoResgate.o $(CXXFLAGS)

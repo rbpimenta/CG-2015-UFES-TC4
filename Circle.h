@@ -34,7 +34,10 @@ public:
 	void setValues(XMLElement* elem);
 	void showValues();
 	
+	bool internoCircunferencia(float x, float y);
+	
 	void desenharCircle(float R, float G, float B);
+	void desenharCircleSemTransformacao (float R, float G, float B);
 
 
 	// Getters and Setters

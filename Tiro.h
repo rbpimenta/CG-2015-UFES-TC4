@@ -11,7 +11,7 @@ using namespace std;
 
 class Tiro
 {
-	protected:
+	public:
 		float velocidadeTiro;
 		Circle* tiro;
 		
@@ -33,10 +33,12 @@ class Tiro
 		~Tiro();
 		void carregarInformacoes();
 		void desenharTiro();
+		bool verificarLimites(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito);
 		void movimentarParaFrente();
 		void movimentarParaTras();
 		void showValues();
 		
+		// Getters and Setters
 		void setVelocidade (float v) { this->velocidadeTiro = v;}
 		float getVelocidade () { return this->velocidadeTiro;}
 		
@@ -47,6 +49,20 @@ class Tiro
 			this->velocidadeTiro = t->getVelocidade();
 		}
 
+		float getPosX() {
+			return this->posX;
+		}
+		void setPosX(float x) {
+			this->posX = x;
+		}		
+
+		float getPosY() {
+			return this->posY;
+		}
+		void setPosY(float y) {
+			this->posY = y;
+		}	
+			
 };
 
 #endif

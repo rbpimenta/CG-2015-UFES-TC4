@@ -38,7 +38,10 @@ public:
 	void showValues();
 	void setValues(XMLElement* elem);
 	
-	void desenharRectangle(float height, float width, float R, float G, float B);
+	void desenharRectangle(float height, float width, float R, float G, float B, bool desenharContorno);
+	void desenharRectangle (float R, float G, float B, bool desenharContorno);
+	void desenharContorno (float R, float G, float B);
+	bool detectarRectangle (float x, float y);
 
 	// Getters and Setters
 	float getX ();

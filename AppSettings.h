@@ -15,6 +15,8 @@
 #include "Circle.h"
 #include "Helicoptero.h"
 #include "Tiro.h"
+#include "Time.h"
+#include "ObjetoResgate.h"
 
 using namespace std;
 
@@ -27,7 +29,8 @@ protected:
 	vector<Circle>* dadosInimigos;
 	int quantidadeInimigos;
 
-	vector<Circle>* objetoResgate;
+	vector<Circle>* dadosObjetoResgate;
+	vector<ObjetoResgate>* objetosResgate;
 	int quantidadeObjetosResgate;
 	
 	// variavel que representa o helicoptero do jogador
@@ -35,6 +38,9 @@ protected:
 	vector<Helicoptero>* inimigos;
 	
 	Tiro* tiro;
+	
+	// Dados para desenhar o combustível
+	Rectangle* combustivel;
 	
 	float velocidadeHelicoptero;
 	float velocidadeHelicopteroInimigo;
@@ -61,6 +67,7 @@ private:
 	void desenharJogador();
 	void desenharInimigos();
 	void desenharHelicoptero();
+	void desenharCombustivel();
 
 	
 public:
@@ -81,6 +88,10 @@ public:
 	void showValues ();
 	void detectarObjetos(float x, float y);
 	void desenharObjetos();
+	
+	void verificaTiros();
+	
+	void carregarDadosCombustivel();
 
 	// Getters and Setters
 	string getPathArena();
@@ -99,8 +110,16 @@ public:
 	int getQuantidadeInimigos();
 	void setQuantidadeInimigos(int quantidadeInimigos);
 
-	vector<Circle>* getObjetoResgate ();
-	void setObjetoResgate (vector<Circle>* objetoResgate);
+	vector<Circle>* getDadosObjetoResgate ();
+	void setDadosObjetoResgate (vector<Circle>* objetoResgate);
+	
+	vector<ObjetoResgate>* getObjetosResgate () {
+		return this->objetosResgate;
+	}
+	void setObjetoResgate (vector<ObjetoResgate>* objetosResgate) {
+		this->objetosResgate = objetosResgate;
+	}
+	
 	int getQuantidadeObjetosResgate();
 	void setQuantidadeObjetosResgate (int quantidadeObjetoResgate);
 	

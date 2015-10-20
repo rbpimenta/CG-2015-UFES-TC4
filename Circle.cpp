@@ -91,6 +91,51 @@ int i = 0;
 	glEnd();
 }
 
+void Circle::desenharCircleSemTransformacao (float R, float G, float B) {
+	int i = 0;
+	int num_segments = 100;
+	float twicePi = 2*M_PI;
+	float radius = this->getR();
+		
+	glColor3f(R, G, B);
+		// Desenhar a parte interna do círculo
+		glBegin(GL_TRIANGLE_FAN); //BEGIN CIRCLE
+		glVertex3f(this->getCx(), this->getCy(), 0.0); // center of circle
+		   for (i = 0; i <= 20; i++)   {
+				glVertex3f (
+					(this->getCx() + (radius * cosf(i * twicePi / 20))),
+					(this->getCy() + (radius * sin(i * twicePi / 20))),
+					0.0);
+			}
+		glEnd();
+
+		// Desenhar a parte da superfície do círculo
+		glBegin(GL_LINE_LOOP);
+			for (i = 0; i < num_segments; i++)   {
+				float theta = 2.0f * 3.1415926f * float(i) / float(num_segments);//get the current angle
+				float x = this->getR() * cosf(theta);//calculate the x component
+				float y = this->getR() * sinf(theta);//calculate the y component
+				glVertex3f(x + this->getCx(),
+							y + this->getCy(),
+							0.0);//output vertex
+			}
+		glEnd();
+}
+
+bool Circle::internoCircunferencia(float x, float y) {
+
+	float distX = pow ((this->getCx() - x), 2.0);
+	float distY = pow ((this->getCy() - y), 2.0);
+	float rPow2 = pow (this->getR(), 2.0);
+	float soma = distX + distY;
+
+	if (soma <= rPow2) {
+		return true;
+	}
+
+	return false;
+}
+
 // Getters and Setters
 float Circle::getCx() {
 	return this->cx;

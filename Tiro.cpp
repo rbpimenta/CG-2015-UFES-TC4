@@ -108,6 +108,14 @@ void Tiro::desenharTiro() {
 	glPopMatrix(); // Escala
 }
 
+bool Tiro::verificarLimites(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito){
+	if (this->posX > limiteDireito || this->posX < limiteEsquerdo
+		|| this->posY < limiteSuperior || this->posY > limiteInferior) {
+			return false;
+		}
+	else return true;
+}
+
 void Tiro::movimentarParaFrente() {
 	this->posX = this->posX + this->velocidadeTiro*cos(this->anguloGiro*M_PI/180 + this->anguloMira*M_PI/180);
 	this->posY += this->velocidadeTiro*sin(this->anguloGiro*M_PI/180 + this->anguloMira*M_PI/180);

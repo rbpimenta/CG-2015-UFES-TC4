@@ -6,11 +6,14 @@
 #include "Polyline.h"
 #include "tinyxml2.h"
 #include "Tiro.h"
+#include "Time.h"
+#include "ObjetoResgate.h"
 
 #include <GL/glut.h>
 #include <GL/glu.h>
 #include <GL/gl.h>
 #include <vector>
+#include <string>
 #include <math.h>
 
 using namespace std;
@@ -23,10 +26,17 @@ protected:
 	// Definindo velocidade do helicoptero
 	float velocidadeHelicoptero;
 	
-	// valor se id = jogador
-	float tempoDeVoo; 
+	// Define se o helicoptero é do tipo "jogador" ou do tipo "inimigo"
+	string tipo;
 	
-	// valores se id = inimigo
+	// Verifica se o helicoptero foi atingido
+	bool foiAtingido;
+	
+	// valor se tipo = jogador
+	Time* tempo; 
+	bool temCombustivel;
+	
+	// valores se tipo = inimigo
 	float freqTiro;
 	
 	// Helice
@@ -77,7 +87,7 @@ public:
 	// Tiro
 	void realizarTiro(Tiro* t);
 	void mostrarTiros();
-	void movimentarTiros();
+	void movimentarTiros(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito);
 	
 	// Mira
 	void rotacionarMira (float x, float y);
@@ -108,6 +118,15 @@ public:
 	void desenharCentroHelice();
 	void desenharHelices(Circle* c);
 	
+	// tiros
+	void verificaTirosJogador(vector<Helicoptero>* inimigos, float quantidadeInimigos);
+	
+	// combustível
+	void atualizarCombustivel(Rectangle* postoAbastecimento);
+	
+	// resgatar Objeto Resgate
+	void resgatarObjeto(vector<ObjetoResgate>* objetosResgate);
+	
 	bool detectarLimites(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito);
 	void desenharHelicoptero();
 	
@@ -122,10 +141,10 @@ public:
 	}
 	
 	void setTempoDeVoo (float t) {
-		this->tempoDeVoo = t;
-	}
-	float getTempoDeVoo () {
-		return this->tempoDeVoo;
+		cout << "Setando tempo de Voo\n";
+		this->tempo->tempoMaximo = (int) t;
+		this->tempo->tempoAtual = (int)  t;
+		this->tempo->tempoUltimaCarga = 0.0;
 	}
 	
 	void setFreqTiro (float f) {
@@ -133,6 +152,17 @@ public:
 	}
 	float getFreqTiro () {
 		return this->freqTiro;
+	}
+	
+	void setTipo (string t) {
+		this->tipo = t;
+	}
+	string getTipo () {
+		return this->tipo;
+	}
+	
+	Time* getTempo() {
+		return this->tempo;
 	}
 };
 

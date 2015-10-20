@@ -123,15 +123,19 @@ void idle(void) {
     }
     
     appSettings->getJogador()->moverHelice();
-    appSettings->getJogador()->movimentarTiros();
+    appSettings->getJogador()->movimentarTiros(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito);
     
     int i = 0;
     Helicoptero* inimigo;
     for (i = 0; i < appSettings->getQuantidadeInimigos(); i++) {
     	inimigo = &(appSettings->getInimigos()->at(i));
     	inimigo->moverHelice();
-    	inimigo->movimentarTiros();
+    	inimigo->movimentarTiros(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito);
     }
+    
+    appSettings->verificaTiros();
+    appSettings->getJogador()->atualizarCombustivel(appSettings->getPostoAbastecimento());
+    appSettings->getJogador()->resgatarObjeto(appSettings->getObjetosResgate());
     
     glutPostRedisplay();
 }
@@ -168,7 +172,10 @@ void mouseMove (int x, int y) {
 int main(int argc, char** argv) {
 	appSettings->loadConfigXML(argv);
 	appSettings->loadSvgFile();
+	cout << "svg carregado!\n";
+	appSettings->carregarDadosCombustivel();
 	appSettings->carregarInformacoesHelicoptero();
+	cout << "Informações helicoptero carregadas!\n";
 
 	// Iniciando tela e demais variÃ¡veis
 	glutInit(&argc, argv);

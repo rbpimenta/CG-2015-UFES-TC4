@@ -89,7 +89,33 @@ void Rectangle::setValues(XMLElement* elem) {
 	this->setStroke(stroke);
 }
 
-void Rectangle::desenharRectangle (float height, float width, float R, float G, float B) {
+void Rectangle::desenharContorno (float R, float G, float B) {
+	// Contorno
+	glColor3f(0.0, 0.0, 0.0);
+	glBegin(GL_LINE_LOOP);
+		glVertex2f( -this->width/2.0, 0.0);                        // Top Left
+		glVertex2f( -this->width/2.0, this->height);               // Bottom Left
+		glVertex2f( this->width/2.0, this->height);               // Bottom Right
+		glVertex2f( this->width/2.0, 0.0);                // Top Right
+	glEnd();
+
+}
+
+void Rectangle::desenharRectangle (float R, float G, float B, bool desenharContorno) {
+	glColor3f(R,G,B);
+	glBegin(GL_QUADS);
+		glVertex2f( -this->width/2.0, 0.0);                        // Top Left
+		glVertex2f( -this->width/2.0, this->height);               // Bottom Left
+		glVertex2f( this->width/2.0, this->height);               // Bottom Right
+		glVertex2f( this->width/2.0, 0.0);                // Top Right
+	glEnd();
+	
+	if (desenharContorno == true) {
+		this->desenharContorno(0.0, 0.0, 0.0);
+	}
+}
+
+void Rectangle::desenharRectangle (float height, float width, float R, float G, float B, bool desenharContorno) {
 	glColor3f(R,G,B);
 	glBegin(GL_QUADS);
 		glVertex2f( -width/2.0, 0.0);                        // Top Left
@@ -98,14 +124,22 @@ void Rectangle::desenharRectangle (float height, float width, float R, float G, 
 		glVertex2f( width/2.0, 0.0);                // Top Right
 	glEnd();
 	
-	// Contorno
-	glColor3f(0.0, 0.0, 0.0);
-	glBegin(GL_LINE_LOOP);
-		glVertex2f( -width/2.0, 0.0);                        // Top Left
-		glVertex2f( -width/2.0, height);               // Bottom Left
-		glVertex2f( width/2.0, height);               // Bottom Right
-		glVertex2f( width/2.0, 0.0);                // Top Right
-	glEnd();
+	if (desenharContorno == true) {
+		this->desenharContorno(0.0, 0.0, 0.0);
+	}
+}
+
+bool Rectangle::detectarRectangle (float x, float y) {
+	if (x > this->getX()
+		&& x < (this->getX() + this->getWidth())) {
+
+		if (y > this->getY()
+			&& y < (this->getY() + this->getHeight())) {
+
+			return true;
+		}
+	}
+	return false;
 }
 
 // Getters and Setters
