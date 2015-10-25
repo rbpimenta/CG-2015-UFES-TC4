@@ -125,7 +125,7 @@ public:
 	void atualizarCombustivel(Rectangle* postoAbastecimento);
 	
 	// resgatar Objeto Resgate
-	void resgatarObjeto(vector<ObjetoResgate>* objetosResgate);
+	int resgatarObjeto(vector<ObjetoResgate>* objetosResgate);
 	
 	// detecta colisooes
 	bool detectarLimitesArena(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito);

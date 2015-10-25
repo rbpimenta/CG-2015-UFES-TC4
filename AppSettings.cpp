@@ -456,6 +456,33 @@ void AppSettings::desenharHelicoptero() {
 	}
 }
 
+void AppSettings::imprimirVenceuJogo(){
+	// Teste para imprimir algo na tela!
+	glPushAttrib(GL_ENABLE_BIT);
+	glColor3f(1, 0, 0);
+	
+	float posicaoTextoX = this->getDadosArena()->getX()/2;
+	float posicaoTextoY = this->getDadosArena()->getY()/2;
+	
+	glRasterPos3f(posicaoTextoX, posicaoTextoY, 0.0);
+	const char* msg = "VOCE GANHOU!!!";
+	while (*msg) {
+		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, *msg);
+		msg++;
+	}
+}
+
+void AppSettings::imprimirPerdeuJogo(){
+}
+
+void AppSettings::imprimirMensagem (bool venceu){
+	if (venceu) {
+		this->imprimirVenceuJogo();
+	} else {
+		this->imprimirPerdeuJogo();
+	}
+}
+
 void AppSettings::desenharObjetos() {	
 	this->desenharArena();
 	this->desenharPostoAbastecimento();
@@ -464,6 +491,10 @@ void AppSettings::desenharObjetos() {
 //	this->desenharInimigos();
 	this->desenharObjetosResgate();
 	this->desenharHelicoptero();
+	
+	if (this->quantidadeObjetosResgate <= 0) {
+		this->imprimirMensagem(true);
+	}	
 }
 
 void AppSettings::setarPosicaoHelicopteros(){

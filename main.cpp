@@ -135,7 +135,13 @@ void idle(void) {
     
     appSettings->verificaTiros();
     appSettings->getJogador()->atualizarCombustivel(appSettings->getPostoAbastecimento());
-    appSettings->getJogador()->resgatarObjeto(appSettings->getObjetosResgate());
+    
+    // Verificando quantos objetos foram resgatados
+	int objetosResgatados = 0;
+	objetosResgatados = appSettings->getJogador()->resgatarObjeto(appSettings->getObjetosResgate());
+    
+    // Definindo quantos objetos de resgate ainda faltam
+	appSettings->setQuantidadeObjetosResgate(appSettings->getQuantidadeObjetosResgate() - objetosResgatados);
     
     glutPostRedisplay();
 }

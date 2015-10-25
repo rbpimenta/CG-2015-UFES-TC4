@@ -93,6 +93,11 @@ public:
 	
 	void carregarDadosCombustivel();
 
+	// Imprimir Mensagens de fim de jogo
+	void imprimirVenceuJogo();
+	void imprimirPerdeuJogo();
+	void imprimirMensagem (bool venceu);
+
 	// Getters and Setters
 	string getPathArena();
 	void setPathArena(string pathArena);

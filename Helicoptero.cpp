@@ -627,17 +627,21 @@ void Helicoptero::atualizarCombustivel(Rectangle* postoAbastecimento) {
 	}
 }
 
-void Helicoptero::resgatarObjeto(vector<ObjetoResgate>* objetosResgate) {
+int Helicoptero::resgatarObjeto(vector<ObjetoResgate>* objetosResgate) {
 	int i = 0;
 	ObjetoResgate* obj;
+	int objetosResgatados = 0;
 	
 	
 	for (i = 0; i < (int) objetosResgate->size(); i++) {
 		obj = &(objetosResgate->at(i));
 		if (obj->dadosObjetoResgate->internoCircunferencia(this->posX, this->posY) == true ){
 			obj->objetoFoiResgatado();
+			objetosResgatados += 1;
 		}
 	}
+	
+	return objetosResgatados;
 }
 
 void Helicoptero::definirCor(float R, float G, float B) {
