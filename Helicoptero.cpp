@@ -149,13 +149,14 @@ void Helicoptero::carregarInformacoes() {
 }
 
 void Helicoptero::setarValores(Circle* c) {
-	this->dadosCircle->setCx(c->getCx());
+	/*this->dadosCircle->setCx(c->getCx());
 	this->dadosCircle->setCy(c->getCy());
 	this->dadosCircle->setFill(c->getFill());
 	this->dadosCircle->setId(c->getId());
-	this->dadosCircle->setR(c->getR());
+	this->dadosCircle->setR(c->getR());*/
+	this->dadosCircle = c;
 	
-	this->posX = this->dadosCircle->getCx() + this->dadosCircle->getR();
+	this->posX = this->dadosCircle->getCx();
 	this->posY = this->dadosCircle->getCy();
 }
 
@@ -265,56 +266,15 @@ void Helicoptero::desenharCentroHelice() {
 	glPopMatrix();
 }
 
-bool Helicoptero::detectarLimites (float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito) {
-	float x = this->posX;
-	float y = this->posY;
-	float raio = this->dadosCircle->getR()*this->escalaHelicoptero;
-	float comprimentoHelicoptero = this->corpo->getWidth();
-	
-	
-	if ((x + comprimentoHelicoptero) > limiteDireito) {
-		//cout << "Retornou limite Direito\n";
-		this->posX -=  this->velocidadeHelicoptero;
-		return false;
-	}
-	
-	if ((x - comprimentoHelicoptero) < limiteEsquerdo) {
-		//cout << "Retornou limite Esquerdo\n";
-		this->posX += this->velocidadeHelicoptero;
-		return false;
-	}
-	
-	if ((y + comprimentoHelicoptero) > limiteInferior) {
-		//cout << "Retornou limite Direito\n";
-		this->posY -=  this->velocidadeHelicoptero;
-		return false;
-	}
-	
-	if ((y - comprimentoHelicoptero) < limiteSuperior) {
-		//cout << "Retornou limite Esquerdo\n";
-		this->posY += this->velocidadeHelicoptero;
-		return false;
-	}
-	
-	return true;
-}
-
 void Helicoptero::desenharHelicoptero() {
 	if (this->foiAtingido == true) {
 		return;
 	}
 	
-	if (this->tipo == "jogador") {
-		if (this->tempo->tempoAtual <= 0) {
-			//cout << "Tempo Esgotado!\n";
-		}
-	}
-	
 	float comprimentoHelicoptero = this->corpo->getHeight() + 20 + this->caudaDireita->getHeight();
 
-
 	// Definir o centro do círculo como a posição posX e posY
-	float fatorEscala = (((2*this->dadosCircle->getR())/comprimentoHelicoptero)*this->escalaHelicoptero)*0.8;
+	float fatorEscala = (((2*this->dadosCircle->getR())/comprimentoHelicoptero)*this->escalaHelicoptero)*0.5;
 
 	float raio = comprimentoHelicoptero/2;
 	
@@ -333,22 +293,27 @@ void Helicoptero::desenharHelicoptero() {
 	glPushMatrix(); // Escala
 		// diminuir tamanho do helicoptero de acordo com tamanho do círculo
 		glScalef(fatorEscala, fatorEscala, 0.0);
-	
+			
+		// Na primeira vez referencia posX e posY para o centro do círculo
 		xTranslated = this->posX*fatorEscalaInverso;
 		yTranslated = this->posY*fatorEscalaInverso;
 		
 		// movimentar o helicoptero
 		glTranslatef(xTranslated, yTranslated, 0.0);
 		
-		glPushMatrix(); 
-		//	xTranslated = (this->dadosCircle->getCx() + this->dadosCircle->getR())*fatorEscalaInverso;
-		//	yTranslated = (this->dadosCircle->getCy())*fatorEscalaInverso;
+		glPushMatrix();
+			// rotacionar o helicoptero de acordo com o usuário
+			glRotatef(this->anguloGiro, 0.0, 0.0, 1.0);
 
-			// Ir para direita do círculo
-		//	glTranslatef(xTranslated, yTranslated, 0.0);
+			/*xTranslated = (this->dadosCircle->getR())*fatorEscalaInverso;
+			yTranslated = 0.0;
+			*/
 			
-			// rotacionar o helicoptero em 90º
-			glRotatef(90.0 + this->anguloGiro, 0.0, 0.0, 1.0);
+			xTranslated = 0.0;
+			yTranslated = -(this->dadosCircle->getR())*fatorEscalaInverso;
+
+			// Ir para a parte superior do círculo
+			glTranslatef(xTranslated, yTranslated, 0.0);
 			
 			glPushMatrix();
 				xTranslated = 0.0;
@@ -356,7 +321,7 @@ void Helicoptero::desenharHelicoptero() {
 				glTranslatef(xTranslated, yTranslated, 0.0);
 				glScalef(1/fatorEscala, 1/fatorEscala, 0.0);
 				// Desenhar círculo do helicoptero
-				this->dadosCircle->desenharCircle(this->color[0], this->color[1], this->color[2]);
+				// this->dadosCircle->desenharCircle(this->color[0], this->color[1], this->color[2]);
 			glPopMatrix();
 			
 			this->desenharMira();
@@ -369,22 +334,113 @@ void Helicoptero::desenharHelicoptero() {
 	glPopMatrix();	// Fim escala
 }
 
-void Helicoptero::moverParaFrente(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito) {
+bool Helicoptero::detectarColisaoHelicoptero(Circle* c) {
+	float x = this->dadosCircle->getCx();
+	float y = this->dadosCircle->getCy();
+	float raio = this->dadosCircle->getR();
+	
+	if (c->internoCircunferencia(x + raio, y)) {
+		//cout << "Retornou limite Direito\n";
+		this->posX -=  this->velocidadeHelicoptero;
+		return true;
+	}
+	
+	if (c->internoCircunferencia(x - raio, y)) {
+		//cout << "Retornou limite Esquerdo\n";
+		this->posX += this->velocidadeHelicoptero;
+		return true;
+	}
+	
+	if (c->internoCircunferencia(x , y + raio)) {
+		//cout << "Retornou limite Direito\n";
+		this->posY -=  this->velocidadeHelicoptero;
+		return true;
+	}
+	
+	if (c->internoCircunferencia(x , y - raio)) {
+		//cout << "Retornou limite Esquerdo\n";
+		this->posY += this->velocidadeHelicoptero;
+		return true;
+	}
+	
+	return false;
+}
+
+bool Helicoptero::detectarLimitesHelicopteros(vector<Helicoptero>* helicopterosInimigos, Helicoptero* jogador) {
+	Helicoptero* h;
+	int i;
+	
+	if (this->tipo == "jogador") {
+		// verifica todos os inimigos
+		for (i = 0; i < helicopterosInimigos->size(); i++) {
+			h = &(helicopterosInimigos->at(i));
+			if (h->foiAtingido == false) {
+				if (this->detectarColisaoHelicoptero(h->dadosCircle) == true) {
+					//cout << "Helicoptero colidiu!\n";
+					return false;
+				}
+			}
+		}
+		
+	} else if (this->tipo == "inimigo") {
+		// verifica todos menos o inimigo em questão
+		
+	}
+	
+	return true;
+}
+
+bool Helicoptero::detectarLimitesArena (float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito) {
+	float x = this->posX;
+	float y = this->posY;
+	float raio = this->dadosCircle->getR();
+	
+	if ((x + raio) > limiteDireito) {
+		//cout << "Retornou limite Direito\n";
+		this->posX -=  this->velocidadeHelicoptero;
+		return false;
+	}
+	
+	if ((x - raio) < limiteEsquerdo) {
+		//cout << "Retornou limite Esquerdo\n";
+		this->posX += this->velocidadeHelicoptero;
+		return false;
+	}
+	
+	if ((y + raio) > limiteInferior) {
+		//cout << "Retornou limite Direito\n";
+		this->posY -=  this->velocidadeHelicoptero;
+		return false;
+	}
+	
+	if ((y - raio) < limiteSuperior) {
+		//cout << "Retornou limite Esquerdo\n";
+		this->posY += this->velocidadeHelicoptero;
+		return false;
+	}
+	
+	return true;
+}
+
+
+void Helicoptero::moverParaFrente(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito, vector<Helicoptero>* helicopterosInimigos, Helicoptero* jogador) {
 	if (this->enableMovimento == true
-		&& this->detectarLimites(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito)) {
+		&& this->detectarLimitesArena(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito)
+		&& this->detectarLimitesHelicopteros(helicopterosInimigos, jogador)) {
 			
-		this->posX += this->velocidadeHelicoptero*cos(this->anguloGiro*M_PI/180);
-		this->posY += this->velocidadeHelicoptero*sin(this->anguloGiro*M_PI/180);
+		this->posX += this->velocidadeHelicoptero*cos((-90 +this->anguloGiro)*M_PI/180);
+		this->posY += this->velocidadeHelicoptero*sin((-90 +this->anguloGiro)*M_PI/180);
 
 	}
 }
 
-void Helicoptero::moverParaTras(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito) {
+void Helicoptero::moverParaTras(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito, vector<Helicoptero>* helicopterosInimigos, Helicoptero* jogador) {
 	if( this->enableMovimento == true
-		&& this->detectarLimites(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito)){
+		&& this->detectarLimitesArena(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito)
+		&& this->detectarLimitesHelicopteros(helicopterosInimigos, jogador)){
 			
-		this->posX -= this->velocidadeHelicoptero*cos(this->anguloGiro*M_PI/180);
-		this->posY -= this->velocidadeHelicoptero*sin(this->anguloGiro*M_PI/180);
+		this->posX -= this->velocidadeHelicoptero*cos((-90 +this->anguloGiro)*M_PI/180);
+		this->posY -= this->velocidadeHelicoptero*sin((-90 +this->anguloGiro)*M_PI/180);
 
 	}	
 }
@@ -418,7 +474,7 @@ void Helicoptero::mudarEscalaMovimento() {
 void Helicoptero::rotacionarMira(float x, float y) {
 	if (posMiraAnteriorX > x) {
 		rotacionarMiraEsquerda();
-	} else {
+	} else if (posMiraAnteriorX < x){
 		rotacionarMiraDireita();
 	}
 	
@@ -439,6 +495,7 @@ void Helicoptero::rotacionarMiraDireita() {
 
 
 void Helicoptero::rotacionarMiraEsquerda() { 
+cout << "Rotacionar mira\n";
 	if (this->enableMovimento) {
 		if (this->anguloMira < -44) {
 			this->anguloMira = -45;
@@ -452,7 +509,10 @@ void Helicoptero::rotacionarMiraEsquerda() {
 
 void Helicoptero::realizarTiro(Tiro* t) {
 	if (enableMovimento) {
-		Tiro* novoTiro = new Tiro(this->fatorEscala, (1/this->fatorEscala), this->cx, this->cy, this->raio, this->anguloGiro, this->anguloMira, this->mira->getHeight(),this->posX, this->posY);
+		Tiro* novoTiro = new Tiro(this->fatorEscala, (1/this->fatorEscala), this->dadosCircle->getCx(), 
+									this->dadosCircle->getCy(), this->dadosCircle->getR(), this->anguloGiro, 
+									this->anguloMira, this->mira->getHeight(),
+									this->posX, this->posY);
 		novoTiro->setTiro(t);
 		this->tiros->push_back(*novoTiro);
 	}
@@ -535,15 +595,16 @@ void Helicoptero::verificaTirosJogador(vector<Helicoptero>* inimigos, float quan
 void Helicoptero::atualizarCombustivel(Rectangle* postoAbastecimento) {
 	//cout << "tempo Maximo = " << this->tempo->tempoMaximo << "\n";
 	int currentTime = (int) glutGet(GLUT_ELAPSED_TIME)/1000;
-	cout << "current Time = " << currentTime << "\n";
+//	cout << "current Time = " << currentTime << "\n";
 	
 	// calcular a distancia entre os dois tempos
 	int diferenca = currentTime - this->tempo->tempoUltimaCarga;
-	cout << "diferenca = " << diferenca << "\n";
+//	cout << "diferenca = " << diferenca << "\n";
 	
 	// tempo atual sempre será a diferenca entre o tempo maximo e a diferenca acima
-	this->tempo->tempoAtual = this->tempo->tempoMaximo - diferenca;
-	cout << "tempoAtual = " << this->tempo->tempoAtual << "\n";
+	if (this->enableMovimento) this->tempo->tempoAtual = this->tempo->tempoMaximo - diferenca;
+	else this->tempo->tempoAtual = this->tempo->tempoAtual;
+//	cout << "tempoAtual = " << this->tempo->tempoAtual << "\n";
 	
 	// Se o tempo acabar o helicoptero aterrisa e a variavel temCombustivel é setada para false
 	if (this->tempo->tempoAtual <= 0) {
@@ -551,15 +612,18 @@ void Helicoptero::atualizarCombustivel(Rectangle* postoAbastecimento) {
 		if (this->temCombustivel == true) {
 			this->mudarEscalaMovimento();
 			this->temCombustivel = false;
+			
+			// Situação para recarregar o combustível
+			if (this->enableMovimento == false &&
+			postoAbastecimento->detectarRectangle(this->dadosCircle->getCx(), this->dadosCircle->getCy())) {
+				this->tempo->tempoUltimaCarga = currentTime;
+				this->tempo->tempoAtual = this->tempo->tempoMaximo;
+				this->temCombustivel = true;
+			} else {
+				cout << "O jogo acabou!\n";
+				//exit(1);
+			} 
 		}		
-	}
-	
-	// Situação para recarregar o combustível
-	if (this->enableMovimento == false &&
-	postoAbastecimento->detectarRectangle(this->dadosCircle->getCx(), this->dadosCircle->getCy())) {
-		this->tempo->tempoUltimaCarga = currentTime;
-		this->tempo->tempoAtual = this->tempo->tempoMaximo;
-		this->temCombustivel = true;
 	}
 }
 

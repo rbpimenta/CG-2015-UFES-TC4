@@ -77,7 +77,7 @@ public:
 	void carregarInformacoesHelicoptero(XMLElement* elem);
 	void carregarInformacoesHelicopteroInimigo(XMLElement* elem);
 	
-	void carregarInformacoesHelicoptero();
+	void carregarInformacoesHelicopteros();
 	void carregarHelicopteroJogador();
 	void carregarHelicopteroInimigos();
 	void setarPosicaoHelicopteros();

@@ -74,36 +74,38 @@ void Tiro::desenharTiro() {
 		float xTranslated = this->posX*this->fatorEscalaInverso;
 		float yTranslated = this->posY*this->fatorEscalaInverso;
 		
+		// começa do centro do círculo
 		glTranslatef(xTranslated, yTranslated, 0.0);
 		
 		glPushMatrix(); 
-		//	xTranslated = (this->cx + this->raio)*fatorEscalaInverso;
-		//	yTranslated = (this->cy)*fatorEscalaInverso;
-	
-			// Ir para direita do círculo
-		//	glTranslatef(xTranslated, yTranslated, 0.0);
-			
-			// rotacionar o helicoptero em 90º
-			glRotatef(90.0 + this->anguloGiro, 0.0, 0.0, 1.0);
-			
+			// rotacionar o helicoptero de acordo com o usuário
+			glRotatef(this->anguloGiro, 0.0, 0.0, 1.0);
+
+			// devemos ir para a parte superior, de acordo com o angulo da mira
+			xTranslated = (this->miraHeight)*sin(this->anguloMira*M_PI/180);
+			yTranslated = -(this->raio)*fatorEscalaInverso*cos(this->anguloMira*M_PI/180);
+
+			// Ir para a parte superior do círculo
+			glTranslatef(xTranslated, yTranslated, 0.0);
+			/*
 			glPushMatrix();
 				xTranslated = 0.0;
-				yTranslated = this->miraHeight;
+				yTranslated = -this->miraHeight;
 				
-				glTranslatef(xTranslated, yTranslated, 0.0);
-				glRotatef(this->anguloMira, 0.0, 0.0, 1.0);
+				glTranslatef(xTranslated, yTranslated, 0.0);*/
+			//	glRotatef(this->anguloMira, 0.0, 0.0, 1.0);
 				
-				glPushMatrix();
-					xTranslated = 0.0;
-					yTranslated = -this->miraHeight;
-					glTranslatef(xTranslated, yTranslated,0.0);
+				//glPushMatrix();
+				//	xTranslated = 0.0;
+				//	yTranslated = -this->miraHeight;
+				//	glTranslatef(xTranslated, yTranslated,0.0);
 				
 					this->tiro->desenharCircle(0.0, 0.0, 0.0);
 				/*
 				Add to work on linux
 				glPopMatrix();
 				*/
-			glPopMatrix();
+			//glPopMatrix();
 		glPopMatrix();
 	glPopMatrix(); // Escala
 }
@@ -117,13 +119,13 @@ bool Tiro::verificarLimites(float limiteSuperior, float limiteInferior, float li
 }
 
 void Tiro::movimentarParaFrente() {
-	this->posX = this->posX + this->velocidadeTiro*cos(this->anguloGiro*M_PI/180 + this->anguloMira*M_PI/180);
-	this->posY += this->velocidadeTiro*sin(this->anguloGiro*M_PI/180 + this->anguloMira*M_PI/180);
+	this->posX = this->posX + this->velocidadeTiro*cos((270 + this->anguloGiro)*M_PI/180 + (this->anguloMira)*M_PI/180);
+	this->posY += this->velocidadeTiro*sin((270 + this->anguloGiro)*M_PI/180 + (this->anguloMira)*M_PI/180);
 }
 
 void Tiro::movimentarParaTras() {
-	this->posX -= this->velocidadeTiro*cos(this->anguloGiro*M_PI/180 + this->anguloMira*M_PI/180);
-	this->posY -= this->velocidadeTiro*sin(this->anguloGiro*M_PI/180 + this->anguloMira*M_PI/180);	
+	this->posX -= this->velocidadeTiro*cos((270 + this->anguloGiro)*M_PI/180 + (this->anguloMira)*M_PI/180);
+	this->posY -= this->velocidadeTiro*sin((270 + this->anguloGiro)*M_PI/180 + (this->anguloMira)*M_PI/180);	
 }
 
 void Tiro::showValues() {

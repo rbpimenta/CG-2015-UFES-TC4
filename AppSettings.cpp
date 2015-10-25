@@ -414,7 +414,7 @@ void desenharCircle (Circle* c, float R, float G, float B) {
 }
 
 void AppSettings::desenharJogador() {
-//	desenharCircle(this->dadosJogador, 0.0, 1.0, 0.0);
+	desenharCircle(this->dadosJogador, 0.0, 1.0, 0.0);
 }
 
 void AppSettings::desenharInimigos() {
@@ -472,7 +472,6 @@ void AppSettings::setarPosicaoHelicopteros(){
 
 	int i = 0;
 	for (i = 0; i < this->quantidadeInimigos; i++) {
-		cout << "i = " << i << "\n";
 		inimigo = &(this->inimigos->at(i));
 		inimigo->setarValores(&this->getDadosInimigos()->at(i));
 	}
@@ -502,7 +501,7 @@ void AppSettings::carregarHelicopteroInimigos() {
 	}
 }
 
-void AppSettings::carregarInformacoesHelicoptero() {
+void AppSettings::carregarInformacoesHelicopteros() {
 	this->carregarHelicopteroJogador();
 	this->carregarHelicopteroInimigos();
 	this->setarPosicaoHelicopteros();

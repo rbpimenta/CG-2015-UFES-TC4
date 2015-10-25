@@ -100,8 +100,8 @@ public:
 	void moverHelice();
 	
 	// Movimentação
-	void moverParaFrente(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito);
-	void moverParaTras(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito);
+	void moverParaFrente(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito, vector<Helicoptero>* helicopterosInimigos, Helicoptero* jogador);
+	void moverParaTras(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito, vector<Helicoptero>* helicopterosInimigos, Helicoptero* jogador);
 	void mudarEscalaMovimento();
 	
 	// Rotação
@@ -127,7 +127,12 @@ public:
 	// resgatar Objeto Resgate
 	void resgatarObjeto(vector<ObjetoResgate>* objetosResgate);
 	
-	bool detectarLimites(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito);
+	// detecta colisooes
+	bool detectarLimitesArena(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito);
+	bool detectarLimitesHelicopteros(vector<Helicoptero>* helicopterosInimigos, Helicoptero* jogador);
+	bool detectarColisaoHelicoptero(Circle* c);
+	
+	
 	void desenharHelicoptero();
 	
 	void definirCor (float R, float G, float B);
@@ -163,6 +168,10 @@ public:
 	
 	Time* getTempo() {
 		return this->tempo;
+	}
+	
+	void setDadosCircle (Circle* c) {
+		this->dadosCircle = c;
 	}
 };
 

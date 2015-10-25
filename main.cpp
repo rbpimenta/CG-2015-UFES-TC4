@@ -103,13 +103,13 @@ void idle(void) {
     if(keyStatus['w'] == 1)
     {
     	// so movimenta o helicoptero se o mesmo estiver dentro da arena  	
-        appSettings->getJogador()->moverParaFrente(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito);        
+        appSettings->getJogador()->moverParaFrente(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito, appSettings->getInimigos(), appSettings->getJogador());        
     }
     
     if(keyStatus['s'] == 1)
     {
     	// so movimenta o helicoptero se o mesmo estiver dentro da arena  	
-        appSettings->getJogador()->moverParaTras(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito);
+        appSettings->getJogador()->moverParaTras(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito, appSettings->getInimigos(), appSettings->getJogador());
     }
 
     if(keyStatus['a'] == 1)
@@ -172,10 +172,10 @@ void mouseMove (int x, int y) {
 int main(int argc, char** argv) {
 	appSettings->loadConfigXML(argv);
 	appSettings->loadSvgFile();
-	cout << "svg carregado!\n";
+
 	appSettings->carregarDadosCombustivel();
-	appSettings->carregarInformacoesHelicoptero();
-	cout << "InformaÁıes helicoptero carregadas!\n";
+	appSettings->carregarInformacoesHelicopteros();
+
 
 	// Iniciando tela e demais vari√°veis
 	glutInit(&argc, argv);
