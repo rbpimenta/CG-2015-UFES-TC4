@@ -767,12 +767,7 @@ void Helicoptero::definirCor(float R, float G, float B) {
 	this->color[0] = R;
 	this->color[1] = G;
 	this->color[2] = B;
-	
-	cout << "tipo = " << this->tipo << "\n";
-	cout << "identificador = " << this->identificador << "\n";
-	cout << "R = " << this->color[0] << "\n";
-	cout << "G = " << this->color[1] << "\n";
-	cout << "B = " << this->color[2] << "\n";
+
 }
 
 void Helicoptero::movimentoAleatorio (float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito, vector<Helicoptero>* helicopterosInimigos, Helicoptero* jogador){
@@ -784,13 +779,13 @@ void Helicoptero::movimentoAleatorio (float limiteSuperior, float limiteInferior
 
 void Helicoptero::efetuarTiroInimigo (Tiro* t) {
 	
-	float currentTime = (int) glutGet(GLUT_ELAPSED_TIME) / 1000;
-	
+	float currentTime = glutGet(GLUT_ELAPSED_TIME);
 	float diferenca = currentTime - tempoUltimoDisparo;
-	float tempoLimite = (1/this->freqTiro)/1000;
-		
+
+	// meio em meio segundo o helicoptero vai atirar
+	float tempoLimite = (1/this->freqTiro);
 	
-	if (diferenca >= tempoLimite) {
+	if (diferenca >= tempoLimite) {	
 		tempoUltimoDisparo = currentTime;
 		if (this->foiAtingido == false) {
 			this->realizarTiro(t);

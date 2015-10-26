@@ -146,7 +146,7 @@ void AppSettings::loadConfigXML(char** path) {
 
 void AppSettings::loadSvgFile() {
 	XMLDocument* doc = new XMLDocument();
-	cout << this->pathArena.data() << "\n";
+
 	doc->LoadFile(this->pathArena.data());
 
 	if (doc == NULL) {
@@ -561,6 +561,7 @@ void AppSettings::carregarHelicopteroInimigos() {
 		
 		inimigo->setVelocidade(this->velocidadeHelicopteroInimigo);
 		inimigo->setFreqTiro(this->freqTiro);
+		
 		inimigo->definirCor(1.0, 0.0, 0.0);
 		inimigo->mudarEscalaMovimento();
 		inimigo->carregarInformacoes();

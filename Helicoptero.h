@@ -156,7 +156,6 @@ public:
 	}
 	
 	void setTempoDeVoo (float t) {
-		cout << "Setando tempo de Voo\n";
 		this->tempo->tempoMaximo = (int) t;
 		this->tempo->tempoAtual = (int)  t;
 		this->tempo->tempoUltimaCarga = 0.0;
