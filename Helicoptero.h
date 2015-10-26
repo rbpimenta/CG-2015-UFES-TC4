@@ -26,7 +26,7 @@ protected:
 	// Definindo velocidade do helicoptero
 	float velocidadeHelicoptero;
 	
-	// Define se o helicoptero é do tipo "jogador" ou do tipo "inimigo"
+	// Define se o helicoptero ï¿½ do tipo "jogador" ou do tipo "inimigo"
 	string tipo;
 	
 	// Verifica se o helicoptero foi atingido
@@ -66,7 +66,7 @@ protected:
 	float posMiraAnteriorY;
 	
 	// Propriedades do corpo do helicoptero
-	Circle* dadosCircle; // Define qual o círculo do helicoptero
+	Circle* dadosCircle; // Define qual o cï¿½rculo do helicoptero
 	Rectangle* mira;
 	Rectangle* corpo;
 	Rectangle* cauda;
@@ -79,7 +79,7 @@ public:
 	Helicoptero();
 	~Helicoptero();
 	void carregarInformacoes();
-	// Método responsável por definir qual o círculo do helicoptero
+	// Mï¿½todo responsï¿½vel por definir qual o cï¿½rculo do helicoptero
 	void setarValores(Circle* c);
 	void showValues();
 	
@@ -99,12 +99,12 @@ public:
 	void diminuirGiroHelices();
 	void moverHelice();
 	
-	// Movimentação
+	// Movimentaï¿½ï¿½o
 	void moverParaFrente(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito, vector<Helicoptero>* helicopterosInimigos, Helicoptero* jogador);
 	void moverParaTras(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito, vector<Helicoptero>* helicopterosInimigos, Helicoptero* jogador);
 	void mudarEscalaMovimento();
 	
-	// Rotação
+	// Rotaï¿½ï¿½o
 	void rotacionarDireita();
 	void rotacionarEsquerda();
 	
@@ -121,7 +121,7 @@ public:
 	// tiros
 	void verificaTirosJogador(vector<Helicoptero>* inimigos, float quantidadeInimigos);
 	
-	// combustível
+	// combustï¿½vel
 	void atualizarCombustivel(Rectangle* postoAbastecimento);
 	
 	// resgatar Objeto Resgate
@@ -132,11 +132,12 @@ public:
 	bool detectarLimitesHelicopteros(vector<Helicoptero>* helicopterosInimigos, Helicoptero* jogador);
 	bool detectarColisaoHelicoptero(Circle* c);
 	
-	
 	void desenharHelicoptero();
 	
 	void definirCor (float R, float G, float B);
 	
+	void movimentoAleatorio();
+
 	//Getters and Setters
 	void setVelocidade (float v) {
 		this->velocidadeHelicoptero = v;

@@ -25,7 +25,6 @@
 #include <iterator>
 #include <algorithm>
 
-
 // Variáveis referentes ao tamanho da tela
 float DISPLAY_WIDTH = 0;
 float DISPLAY_HEIGHT = 0;
@@ -42,108 +41,115 @@ using namespace tinyxml2;
 
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
+
 	appSettings->desenharObjetos();
+
 	glutSwapBuffers();
 }
 
-void keyPress(unsigned char key, int x, int y)
-{
-	switch (key)
-    {
-        case '+':
-        	keyStatus['+'] = 1;
-        	break;
-        case '-':
-        	keyStatus['-'] = 1;
-        	break;
-        case 'w':
-        	keyStatus['w'] = 1;
-        	break;
-        case 's':
-        	keyStatus['s'] = 1;
-        	break;
-        case 'a':
-        	keyStatus['a'] = 1;
-        	break;
-        case 'd':
-        	keyStatus['d'] = 1;
-        	break;        	
+void keyPress(unsigned char key, int x, int y) {
+	switch (key) {
+	case '+':
+		keyStatus['+'] = 1;
+		break;
+	case '-':
+		keyStatus['-'] = 1;
+		break;
+	case 'w':
+		keyStatus['w'] = 1;
+		break;
+	case 's':
+		keyStatus['s'] = 1;
+		break;
+	case 'a':
+		keyStatus['a'] = 1;
+		break;
+	case 'd':
+		keyStatus['d'] = 1;
+		break;
 
-    }
-    glutPostRedisplay();
+	}
+	glutPostRedisplay();
 }
 
-void keyup(unsigned char key, int x, int y)
-{
-    keyStatus[(int)(key)] = 0;
-    glutPostRedisplay();
+void keyup(unsigned char key, int x, int y) {
+	keyStatus[(int) (key)] = 0;
+	glutPostRedisplay();
 }
 
 void idle(void) {
-	
 	// Detecta os limites da arena
 	Rectangle* dadosArena = appSettings->getDadosArena();
-	
+
 	float limiteSuperior = dadosArena->getY();
 	float limiteInferior = dadosArena->getY() + dadosArena->getHeight();
 	float limiteEsquerdo = dadosArena->getX();
 	float limiteDireito = dadosArena->getX() + dadosArena->getWidth();
 
-	if(keyStatus['+'] == 1)
-    {
-        appSettings->getJogador()->aumentarGiroHelices();
-    }
-    
-    if(keyStatus['-'] == 1)
-    {
-    	
-        appSettings->getJogador()->diminuirGiroHelices();
-    }
-    
-    if(keyStatus['w'] == 1)
-    {
-    	// so movimenta o helicoptero se o mesmo estiver dentro da arena  	
-        appSettings->getJogador()->moverParaFrente(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito, appSettings->getInimigos(), appSettings->getJogador());        
-    }
-    
-    if(keyStatus['s'] == 1)
-    {
-    	// so movimenta o helicoptero se o mesmo estiver dentro da arena  	
-        appSettings->getJogador()->moverParaTras(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito, appSettings->getInimigos(), appSettings->getJogador());
-    }
+	if (keyStatus['+'] == 1) {
+		appSettings->getJogador()->aumentarGiroHelices();
+	}
 
-    if(keyStatus['a'] == 1)
-    {
-        appSettings->getJogador()->rotacionarEsquerda();
-    }
+	if (keyStatus['-'] == 1) {
 
-    if(keyStatus['d'] == 1)
-    {
-        appSettings->getJogador()->rotacionarDireita();
-    }
-    
-    appSettings->getJogador()->moverHelice();
-    appSettings->getJogador()->movimentarTiros(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito);
-    
-    int i = 0;
-    Helicoptero* inimigo;
-    for (i = 0; i < appSettings->getQuantidadeInimigos(); i++) {
-    	inimigo = &(appSettings->getInimigos()->at(i));
-    	inimigo->moverHelice();
-    	inimigo->movimentarTiros(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito);
-    }
-    
-    appSettings->verificaTiros();
-    appSettings->getJogador()->atualizarCombustivel(appSettings->getPostoAbastecimento());
-    
-    // Verificando quantos objetos foram resgatados
+		appSettings->getJogador()->diminuirGiroHelices();
+	}
+
+	if (keyStatus['w'] == 1) {
+		// so movimenta o helicoptero se o mesmo estiver dentro da arena
+		appSettings->getJogador()->moverParaFrente(limiteSuperior,
+				limiteInferior, limiteEsquerdo, limiteDireito,
+				appSettings->getInimigos(), appSettings->getJogador());
+	}
+
+	if (keyStatus['s'] == 1) {
+		// so movimenta o helicoptero se o mesmo estiver dentro da arena
+		appSettings->getJogador()->moverParaTras(limiteSuperior, limiteInferior,
+				limiteEsquerdo, limiteDireito, appSettings->getInimigos(),
+				appSettings->getJogador());
+	}
+
+	if (keyStatus['a'] == 1) {
+		appSettings->getJogador()->rotacionarEsquerda();
+	}
+
+	if (keyStatus['d'] == 1) {
+		appSettings->getJogador()->rotacionarDireita();
+	}
+
+	appSettings->getJogador()->moverHelice();
+	appSettings->getJogador()->movimentarTiros(limiteSuperior, limiteInferior,
+			limiteEsquerdo, limiteDireito);
+
+	int i = 0;
+	Helicoptero* inimigo;
+	for (i = 0; i < appSettings->getQuantidadeInimigos(); i++) {
+		inimigo = &(appSettings->getInimigos()->at(i));
+		inimigo->moverHelice();
+		inimigo->movimentarTiros(limiteSuperior, limiteInferior, limiteEsquerdo,
+				limiteDireito);
+	}
+
+	// Verifica os tiros dos helicopteros
+	appSettings->verificaTiros();
+
+	// Atualiza o combustível do jogador
+	appSettings->getJogador()->atualizarCombustivel(
+			appSettings->getPostoAbastecimento());
+
+	// Verificando quantos objetos foram resgatados
 	int objetosResgatados = 0;
-	objetosResgatados = appSettings->getJogador()->resgatarObjeto(appSettings->getObjetosResgate());
-    
-    // Definindo quantos objetos de resgate ainda faltam
-	appSettings->setQuantidadeObjetosResgate(appSettings->getQuantidadeObjetosResgate() - objetosResgatados);
-    
-    glutPostRedisplay();
+	objetosResgatados = appSettings->getJogador()->resgatarObjeto(
+			appSettings->getObjetosResgate());
+
+	// Definindo quantos objetos de resgate ainda faltam
+	appSettings->objetosAindaDevemSerResgatados -= objetosResgatados;
+	objetosResgatados = 0;
+
+	// movimentar helicopteros inimigos
+	appSettings->movimentarHelicopterosInimigos();
+
+	glutPostRedisplay();
 }
 
 void init(void) {
@@ -161,7 +167,7 @@ void mouse(int button, int state, int x, int y) {
 	if (state == GLUT_DOWN) {
 		globalX = (float) x;
 		globalY = (float) y;
-		
+
 		if (button == GLUT_RIGHT_BUTTON) {
 			appSettings->getJogador()->mudarEscalaMovimento();
 		}
@@ -171,7 +177,7 @@ void mouse(int button, int state, int x, int y) {
 	}
 }
 
-void mouseMove (int x, int y) {
+void mouseMove(int x, int y) {
 	appSettings->getJogador()->rotacionarMira(x, y);
 }
 
@@ -181,7 +187,6 @@ int main(int argc, char** argv) {
 
 	appSettings->carregarDadosCombustivel();
 	appSettings->carregarInformacoesHelicopteros();
-
 
 	// Iniciando tela e demais variáveis
 	glutInit(&argc, argv);
@@ -201,8 +206,8 @@ int main(int argc, char** argv) {
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);
 
-    glutKeyboardFunc(keyPress);
-    glutKeyboardUpFunc(keyup);
+	glutKeyboardFunc(keyPress);
+	glutKeyboardUpFunc(keyup);
 
 	glutMouseFunc(mouse);
 	glutPassiveMotionFunc(mouseMove);

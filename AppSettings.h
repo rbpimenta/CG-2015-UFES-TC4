@@ -21,6 +21,10 @@
 using namespace std;
 
 class AppSettings {
+public:
+	int objetosAindaDevemSerResgatados;
+	bool mostrarTelaDeJogo;
+
 protected:
 	string pathArena;
 	Rectangle* dadosArena;
@@ -39,7 +43,7 @@ protected:
 	
 	Tiro* tiro;
 	
-	// Dados para desenhar o combustível
+	// Dados para desenhar o combustï¿½vel
 	Rectangle* combustivel;
 	
 	float velocidadeHelicoptero;
@@ -48,7 +52,7 @@ protected:
 	float velocidadeTiro;
 	float tempoDeVoo;
 
-private:
+public:
 	void detectarLimitesArena(float x, float y, float width, float height);
 	void checkCircles (Circle* circle);
 	
@@ -68,6 +72,8 @@ private:
 	void desenharInimigos();
 	void desenharHelicoptero();
 	void desenharCombustivel();
+
+	void movimentarHelicopterosInimigos();
 
 	
 public:

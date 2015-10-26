@@ -2,9 +2,11 @@
 
 Time::Time()
 {
-	float tempoUltimaCarga = 0.0; 
-	float tempoMaximo = 0.0;
-	float tempoAtual = 0.0;
+	this->tempoUltimaCarga = 0.0;
+	this->tempoMaximo = 0.0;
+	this->tempoAtual = 0.0;
+	this->tempoAr = 0.0;
+	this->tempoAterrisagem = 0.0;
 }
 
 Time::~Time()

@@ -37,7 +37,10 @@ AppSettings::AppSettings() {
 	this->dadosObjetoResgate = new vector<Circle>();
 	this->objetosResgate = new vector<ObjetoResgate>();
 	this->quantidadeObjetosResgate = 0;
+	this->objetosAindaDevemSerResgatados = 0;
 	
+	this->mostrarTelaDeJogo = true;
+
 	this->velocidadeHelicoptero = 0.0;
 	this->jogador = new Helicoptero();
 	this->inimigos = new vector<Helicoptero>();
@@ -141,7 +144,7 @@ void AppSettings::loadConfigXML(char** path) {
 
 void AppSettings::loadSvgFile() {
 	XMLDocument* doc = new XMLDocument();
-
+	cout << this->pathArena.data() << "\n";
 	doc->LoadFile(this->pathArena.data());
 
 	if (doc == NULL) {
@@ -232,6 +235,7 @@ void AppSettings::loadSvgFile() {
 			this->quantidadeObjetosResgate++;
 		}
 
+		this->objetosAindaDevemSerResgatados = this->quantidadeObjetosResgate;
 		circleElem = circleElem->NextSiblingElement("circle");
 	}
 
@@ -461,8 +465,8 @@ void AppSettings::imprimirVenceuJogo(){
 	glPushAttrib(GL_ENABLE_BIT);
 	glColor3f(1, 0, 0);
 	
-	float posicaoTextoX = this->getDadosArena()->getX()/2;
-	float posicaoTextoY = this->getDadosArena()->getY()/2;
+	float posicaoTextoX = this->getDadosArena()->getHeight()/2;
+	float posicaoTextoY = this->getDadosArena()->getWidth()/2;
 	
 	glRasterPos3f(posicaoTextoX, posicaoTextoY, 0.0);
 	const char* msg = "VOCE GANHOU!!!";
@@ -473,6 +477,20 @@ void AppSettings::imprimirVenceuJogo(){
 }
 
 void AppSettings::imprimirPerdeuJogo(){
+
+	// Teste para imprimir algo na tela!
+	glPushAttrib(GL_ENABLE_BIT);
+	glColor3f(1, 0, 0);
+
+	float posicaoTextoX = this->getDadosArena()->getHeight()/2;
+	float posicaoTextoY = this->getDadosArena()->getWidth()/2;
+
+	glRasterPos3f(posicaoTextoX, posicaoTextoY, 0.0);
+	const char* msg = "VOCE PERDEU!!!";
+	while (*msg) {
+		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, *msg);
+		msg++;
+	}
 }
 
 void AppSettings::imprimirMensagem (bool venceu){
@@ -484,17 +502,18 @@ void AppSettings::imprimirMensagem (bool venceu){
 }
 
 void AppSettings::desenharObjetos() {	
-	this->desenharArena();
-	this->desenharPostoAbastecimento();
-	this->desenharCombustivel();
-//	this->desenharJogador();
-//	this->desenharInimigos();
-	this->desenharObjetosResgate();
-	this->desenharHelicoptero();
-	
-	if (this->quantidadeObjetosResgate <= 0) {
+	if (this->mostrarTelaDeJogo) {
+		this->desenharArena();
+		this->desenharPostoAbastecimento();
+		this->desenharCombustivel();
+		this->desenharObjetosResgate();
+		this->desenharHelicoptero();
+	}
+
+	if (this->objetosAindaDevemSerResgatados <= 0) {
+		this->mostrarTelaDeJogo = false;
 		this->imprimirMensagem(true);
-	}	
+	}
 }
 
 void AppSettings::setarPosicaoHelicopteros(){
@@ -538,14 +557,14 @@ void AppSettings::carregarInformacoesHelicopteros() {
 	this->setarPosicaoHelicopteros();
 }
 
-// Carregar informações do config.xml do helicoptero do jogador
+// Carregar informa\E7\F5es do config.xml do helicoptero do jogador
 void AppSettings::carregarInformacoesHelicoptero(XMLElement* elem) {
 	elem->QueryFloatAttribute("velHelicoptero",  &this->velocidadeHelicoptero);
 	elem->QueryFloatAttribute("velTiro", &this->velocidadeTiro);	
 	elem->QueryFloatAttribute("tempoDeVoo", &this->tempoDeVoo);	
 }
 
-// Carregar informações do config.xml do helicoptero inimigo
+// Carregar informa\E7\F5es do config.xml do helicoptero inimigo
 void AppSettings::carregarInformacoesHelicopteroInimigo(XMLElement* elem) {
 	elem->QueryFloatAttribute("freqTiro", &this->freqTiro);	
 	elem->QueryFloatAttribute("velHelicoptero",  &this->velocidadeHelicopteroInimigo);
@@ -554,6 +573,9 @@ void AppSettings::carregarInformacoesHelicopteroInimigo(XMLElement* elem) {
 void AppSettings::verificaTiros() {
 	// verifica tiros jogador
 	this->jogador->verificaTirosJogador(this->inimigos, this->quantidadeInimigos);
+
+	// verifica tiros inimigos
+
 }
 
 void AppSettings::carregarDadosCombustivel() {
@@ -617,7 +639,6 @@ void AppSettings::desenharCombustivel() {
 			glPopMatrix();
 		}
 		float w = this->combustivel->getWidth()*proporcao;
-	
 		
 		xTranslated = (this->combustivel->getX() + this->combustivel->getWidth()*proporcao)/2;
 		yTranslated = this->combustivel->getY();
@@ -633,6 +654,10 @@ void AppSettings::desenharCombustivel() {
 		glTranslated(xTranslated, yTranslated, 0.0);
 		this->combustivel->desenharContorno(0.0, 0.0, 0.0);
 	glPopMatrix();
+}
+
+void AppSettings::movimentarHelicopterosInimigos() {
+
 }
 
 // Getters and Setters

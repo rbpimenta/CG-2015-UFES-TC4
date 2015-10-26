@@ -4,14 +4,20 @@
 class Time
 {
 	public:
-		// tempo da última recarga, ou seja, tempo do momento que o jogador estiver no posto de combustível
-		int tempoUltimaCarga; 
+		// tempo da ï¿½ltima recarga, ou seja, tempo do momento que o jogador estiver no posto de combustï¿½vel
+		float tempoUltimaCarga;
 		
-		// tempo máximo de vôo, igual a variável tempoDeVoo definida anteriormente
-		int tempoMaximo;
+		// tempo mï¿½ximo de vï¿½o, igual a variï¿½vel tempoDeVoo definida anteriormente
+		float tempoMaximo;
 		
-		// tempo que sobra de vôo para o jogador
-		int tempoAtual;
+		// tempo que sobra de vï¿½o para o jogador
+		float tempoAtual;
+
+		// Tempo que o helicoptero esta no ar
+		float tempoAr;
+
+		// Tempo em que o helicoptero aterrisou
+		float tempoAterrisagem;
 	
 	public:
 		Time();
