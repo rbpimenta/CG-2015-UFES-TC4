@@ -21,6 +21,8 @@ Helicoptero::Helicoptero() {
 	this->anguloGiro = 0.0;
 	this->escalaHelicoptero = 1.0;
 	this->enableMovimento = false;
+	
+	this->noLimiteDaArena = false;
 
 	// Transformacao
 	this->fatorEscala = 0.0;
@@ -392,6 +394,10 @@ bool Helicoptero::detectarLimitesHelicopteros(
 		for (i = 0; i < helicopterosInimigos->size(); i++) {
 			h = &(helicopterosInimigos->at(i));
 			if (h->foiAtingido == false) {
+				if (h->enableMovimento == false) {
+					return true;
+				}
+				
 				if (this->detectarColisaoHelicoptero(h->dadosCircle) == true) {
 					//cout << "Helicoptero colidiu!\n";
 					return false;
@@ -401,7 +407,7 @@ bool Helicoptero::detectarLimitesHelicopteros(
 
 	} else if (this->tipo == "inimigo") {
 		// verifica todos menos o inimigo em quest�o
-		if (this->detectarColisaoHelicoptero(jogador->dadosCircle)){
+		if (jogador->enableMovimento == true && this->detectarColisaoHelicoptero(jogador->dadosCircle)){
 			return false;
 		}
 		
@@ -422,34 +428,36 @@ bool Helicoptero::detectarLimitesHelicopteros(
 
 bool Helicoptero::detectarLimitesArena(float limiteSuperior,
 		float limiteInferior, float limiteEsquerdo, float limiteDireito) {
+	
 	float x = this->posX;
 	float y = this->posY;
 	float raio = this->dadosCircle->getR();
 
 	if ((x + raio) > limiteDireito) {
-		//cout << "Retornou limite Direito\n";
+		this->noLimiteDaArena = true;
 		this->posX -= this->velocidadeHelicoptero;
 		return false;
 	}
 
 	if ((x - raio) < limiteEsquerdo) {
-		//cout << "Retornou limite Esquerdo\n";
+		this->noLimiteDaArena = true;
 		this->posX += this->velocidadeHelicoptero;
 		return false;
 	}
 
 	if ((y + raio) > limiteInferior) {
-		//cout << "Retornou limite Direito\n";
+		this->noLimiteDaArena = true;
 		this->posY -= this->velocidadeHelicoptero;
 		return false;
 	}
 
 	if ((y - raio) < limiteSuperior) {
-		//cout << "Retornou limite Esquerdo\n";
+		this->noLimiteDaArena = true;
 		this->posY += this->velocidadeHelicoptero;
 		return false;
 	}
 
+	this->noLimiteDaArena = false;
 	return true;
 }
 
@@ -595,6 +603,55 @@ void Helicoptero::movimentarTiros(float limiteSuperior, float limiteInferior,
 	}
 }
 
+bool Helicoptero::verificaTiroInimigo(Helicoptero* helicopteroJogador) {
+	Ponto *centro, *superior, *inferior, *esquerdo, *direito;
+	Tiro* t;
+	int j = 0;
+	
+	if (helicopteroJogador->enableMovimento == false) {
+		return false;
+	}
+	// verificando todos os tiros do inimigo
+	for (j = 0; j < this->tiros->size(); j++) {
+		t = &(this->tiros->at(j));
+		// Definindo pontos de verifica��o
+		centro = new Ponto(t->getPosX(), t->getPosY());
+		superior = new Ponto(t->getPosX(), t->getPosY() - t->tiro->getR());
+		inferior = new Ponto(t->getPosX(), t->getPosY() + t->tiro->getR());
+		direito = new Ponto(t->getPosX() + t->tiro->getR(), t->getPosY());
+		esquerdo = new Ponto(t->getPosX() - t->tiro->getR(), t->getPosY());
+		
+		// verifica centro do tiro
+		if (helicopteroJogador->dadosCircle->internoCircunferencia(centro->getX(),
+				centro->getY()) == true
+		// verifica parte supeior
+				|| helicopteroJogador->dadosCircle->internoCircunferencia(
+						superior->getX(), superior->getY()) == true
+				//verifica parte inferior
+				|| helicopteroJogador->dadosCircle->internoCircunferencia(
+						inferior->getX(), inferior->getY()) == true
+				// verifica lado direito
+				|| helicopteroJogador->dadosCircle->internoCircunferencia(
+						direito->getX(), direito->getY()) == true
+				// verifica lado esquerdo
+				|| helicopteroJogador->dadosCircle->internoCircunferencia(
+						esquerdo->getX(), esquerdo->getY()) == true) {
+
+			helicopteroJogador->foiAtingido = true;
+			return true;
+		}
+
+		free(centro);
+		free(superior);
+		free(inferior);
+		free(direito);
+		free(esquerdo);		
+		
+	}
+	
+	return false;
+}
+
 int Helicoptero::verificaTirosJogador(vector<Helicoptero>* inimigos,
 		float quantidadeInimigos) {
 	int i = 0;
@@ -710,9 +767,18 @@ void Helicoptero::definirCor(float R, float G, float B) {
 	this->color[0] = R;
 	this->color[1] = G;
 	this->color[2] = B;
+	
+	cout << "tipo = " << this->tipo << "\n";
+	cout << "identificador = " << this->identificador << "\n";
+	cout << "R = " << this->color[0] << "\n";
+	cout << "G = " << this->color[1] << "\n";
+	cout << "B = " << this->color[2] << "\n";
 }
 
 void Helicoptero::movimentoAleatorio (float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito, vector<Helicoptero>* helicopterosInimigos, Helicoptero* jogador){
+	if (this->noLimiteDaArena) {
+		this->anguloGiro += (rand() % 720); 
+	}
 	this->moverParaFrente(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito, helicopterosInimigos, jogador);
 }
 
@@ -722,17 +788,12 @@ void Helicoptero::efetuarTiroInimigo (Tiro* t) {
 	
 	float diferenca = currentTime - tempoUltimoDisparo;
 	float tempoLimite = (1/this->freqTiro)/1000;
-	
-	cout << "Tempo para efetuar o disparo!\n";
-	cout << "this->identificador = " << this->identificador << "\n";
-	cout << "currentTime = " << currentTime << "\n";
-	cout << "tempoUltimoDisparo = " << tempoUltimoDisparo << "\n";
-	cout << "tempoLimite = " << tempoLimite << "\n";
-	cout << "diferenca = " << diferenca << "\n";
-	
+		
 	
 	if (diferenca >= tempoLimite) {
 		tempoUltimoDisparo = currentTime;
-		this->realizarTiro(t);
+		if (this->foiAtingido == false) {
+			this->realizarTiro(t);
+		}
 	}
 }

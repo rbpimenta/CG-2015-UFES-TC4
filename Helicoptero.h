@@ -42,6 +42,7 @@ public:
 	// valores se tipo = inimigo
 	float freqTiro;
 	float anguloMovimentoAleatorio;
+	bool movimentoAleatorioRotacao;
 	float tempoUltimoDisparo;
 	
 	// Helice
@@ -61,6 +62,8 @@ public:
 	float enableMovimento;
 	float posX;
 	float posY;
+	
+	bool noLimiteDaArena;
 
 	// Tiro
 	vector<Tiro>* tiros;
@@ -124,6 +127,7 @@ public:
 	
 	// tiros
 	int verificaTirosJogador(vector<Helicoptero>* inimigos, float quantidadeInimigos);
+	bool verificaTiroInimigo(Helicoptero* helicopteroJogador);
 	
 	// combust�vel
 	void atualizarCombustivel(Rectangle* postoAbastecimento);

@@ -598,7 +598,21 @@ void AppSettings::verificaTiros() {
 	this->inimigosAindaVivos -= quantidadeInimigosAtingidos;
 
 	// verifica tiros inimigos
-
+	int i = 0;
+	Helicoptero* inimigo;
+	bool jogadorAtingido = false;
+	
+	for (i = 0; i < this->inimigosAindaVivos; i ++) {
+		inimigo = &(this->inimigos->at(i));
+		if (!inimigo->foiAtingido) {
+			jogadorAtingido = inimigo->verificaTiroInimigo(this->jogador);
+			
+			if (jogadorAtingido) {
+				this->jogador->foiAtingido;
+				return;
+			}
+		}
+	}
 }
 
 void AppSettings::carregarDadosCombustivel() {
@@ -689,7 +703,7 @@ void AppSettings::movimentarHelicopterosInimigos(float limiteSuperior, float lim
 		inimigo->movimentoAleatorio(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito, this->inimigos, this->jogador);
 		// implementar funcionalidade de atirar aleatoriamente
 		}
-
+		
 		inimigo->efetuarTiroInimigo(this->getTiro());
 	}
 }
