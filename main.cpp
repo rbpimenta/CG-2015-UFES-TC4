@@ -147,7 +147,8 @@ void idle(void) {
 	objetosResgatados = 0;
 
 	// movimentar helicopteros inimigos
-	appSettings->movimentarHelicopterosInimigos();
+	appSettings->movimentarHelicopterosInimigos(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito);
+	
 
 	glutPostRedisplay();
 }

@@ -23,6 +23,7 @@ using namespace std;
 class AppSettings {
 public:
 	int objetosAindaDevemSerResgatados;
+	int inimigosAindaVivos;
 	bool mostrarTelaDeJogo;
 
 protected:
@@ -73,8 +74,7 @@ public:
 	void desenharHelicoptero();
 	void desenharCombustivel();
 
-	void movimentarHelicopterosInimigos();
-
+	void movimentarHelicopterosInimigos(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito);
 	
 public:
 	AppSettings();

@@ -37,8 +37,10 @@ AppSettings::AppSettings() {
 	this->dadosObjetoResgate = new vector<Circle>();
 	this->objetosResgate = new vector<ObjetoResgate>();
 	this->quantidadeObjetosResgate = 0;
-	this->objetosAindaDevemSerResgatados = 0;
 	
+	// Finalização do jogo
+	this->inimigosAindaVivos = 0;
+	this->objetosAindaDevemSerResgatados = 0;
 	this->mostrarTelaDeJogo = true;
 
 	this->velocidadeHelicoptero = 0.0;
@@ -201,7 +203,9 @@ void AppSettings::loadSvgFile() {
 				<< "Erro na hora de encontrar Element 'circle'! Finalizando programa...\n";
 		exit(1);
 	}
-
+	
+	int identificadorContagem = 0;
+	
 	while (circleElem != NULL) {
 		aux = (circleElem->Attribute("id"));
 		id = aux;
@@ -236,6 +240,7 @@ void AppSettings::loadSvgFile() {
 		}
 
 		this->objetosAindaDevemSerResgatados = this->quantidadeObjetosResgate;
+		this->inimigosAindaVivos = this->quantidadeInimigos;
 		circleElem = circleElem->NextSiblingElement("circle");
 	}
 
@@ -514,6 +519,11 @@ void AppSettings::desenharObjetos() {
 		this->mostrarTelaDeJogo = false;
 		this->imprimirMensagem(true);
 	}
+	
+	if (this->jogador->getFoiAtingido() == true) {
+		this->mostrarTelaDeJogo = false;
+		this->imprimirMensagem(false);
+	}
 }
 
 void AppSettings::setarPosicaoHelicopteros(){
@@ -528,6 +538,7 @@ void AppSettings::setarPosicaoHelicopteros(){
 }
 
 void AppSettings::carregarHelicopteroJogador() {
+	this->jogador->identificador = 0;
 	this->jogador->setVelocidade(this->velocidadeHelicoptero);
 	this->tiro->setVelocidade(this->velocidadeTiro);
 	this->jogador->setTempoDeVoo(this->tempoDeVoo);
@@ -539,13 +550,23 @@ void AppSettings::carregarHelicopteroJogador() {
 void AppSettings::carregarHelicopteroInimigos() {
 	int i = 0;
 	
+	int contador = 1;
+	
 	for (i = 0; i < this->quantidadeInimigos; i++) {
 		Helicoptero* inimigo = new Helicoptero();
+		
+		// identificador para identificar helicoptero
+		inimigo->identificador = contador;
+		contador++;
+		
 		inimigo->setVelocidade(this->velocidadeHelicopteroInimigo);
 		inimigo->setFreqTiro(this->freqTiro);
 		inimigo->definirCor(1.0, 0.0, 0.0);
 		inimigo->mudarEscalaMovimento();
 		inimigo->carregarInformacoes();
+		
+		inimigo->anguloGiro = rand() % 360;
+		
 		inimigo->setTipo("inimigo");
 		this->inimigos->push_back(*inimigo);		
 	}
@@ -572,7 +593,9 @@ void AppSettings::carregarInformacoesHelicopteroInimigo(XMLElement* elem) {
 
 void AppSettings::verificaTiros() {
 	// verifica tiros jogador
-	this->jogador->verificaTirosJogador(this->inimigos, this->quantidadeInimigos);
+	int quantidadeInimigosAtingidos = 0.0;
+	quantidadeInimigosAtingidos = this->jogador->verificaTirosJogador(this->inimigos, this->quantidadeInimigos);
+	this->inimigosAindaVivos -= quantidadeInimigosAtingidos;
 
 	// verifica tiros inimigos
 
@@ -585,7 +608,6 @@ void AppSettings::carregarDadosCombustivel() {
 	// set X
 	float x = this->dadosArena->getX() + 20;
 	this->combustivel->setX(x);
-
 
 	// set Y
 	float y = this->dadosArena->getY() + this->dadosArena->getHeight() - 60;
@@ -656,8 +678,20 @@ void AppSettings::desenharCombustivel() {
 	glPopMatrix();
 }
 
-void AppSettings::movimentarHelicopterosInimigos() {
+void AppSettings::movimentarHelicopterosInimigos(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito) {
+	int i = 0;
+	Helicoptero* inimigo;
+	
+	for (i = 0; i < this->quantidadeInimigos; i++) {
+		inimigo = &(this->inimigos->at(i));
+		
+		if (inimigo->getFoiAtingido() == false) {
+		inimigo->movimentoAleatorio(limiteSuperior, limiteInferior, limiteEsquerdo, limiteDireito, this->inimigos, this->jogador);
+		// implementar funcionalidade de atirar aleatoriamente
+		}
 
+		inimigo->efetuarTiroInimigo(this->getTiro());
+	}
 }
 
 // Getters and Setters

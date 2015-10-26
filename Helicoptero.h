@@ -22,7 +22,10 @@ using namespace tinyxml2;
 
 class Helicoptero
 {
-protected:
+public:
+	int identificador;
+	
+public:
 	// Definindo velocidade do helicoptero
 	float velocidadeHelicoptero;
 	
@@ -38,6 +41,8 @@ protected:
 	
 	// valores se tipo = inimigo
 	float freqTiro;
+	float anguloMovimentoAleatorio;
+	float tempoUltimoDisparo;
 	
 	// Helice
 	float velocidadeHelices;
@@ -51,12 +56,12 @@ protected:
 	float raio;
 	
 	// Movimentacao
+	float anguloGiro;
 	float escalaHelicoptero;
 	float enableMovimento;
 	float posX;
 	float posY;
-	float anguloGiro;
-	
+
 	// Tiro
 	vector<Tiro>* tiros;
 	
@@ -82,7 +87,6 @@ public:
 	// M�todo respons�vel por definir qual o c�rculo do helicoptero
 	void setarValores(Circle* c);
 	void showValues();
-	
 	
 	// Tiro
 	void realizarTiro(Tiro* t);
@@ -119,7 +123,7 @@ public:
 	void desenharHelices(Circle* c);
 	
 	// tiros
-	void verificaTirosJogador(vector<Helicoptero>* inimigos, float quantidadeInimigos);
+	int verificaTirosJogador(vector<Helicoptero>* inimigos, float quantidadeInimigos);
 	
 	// combust�vel
 	void atualizarCombustivel(Rectangle* postoAbastecimento);
@@ -136,7 +140,8 @@ public:
 	
 	void definirCor (float R, float G, float B);
 	
-	void movimentoAleatorio();
+	void movimentoAleatorio(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito, vector<Helicoptero>* helicopterosInimigos, Helicoptero* jogador);
+	void efetuarTiroInimigo(Tiro* t);
 
 	//Getters and Setters
 	void setVelocidade (float v) {
@@ -173,6 +178,10 @@ public:
 	
 	void setDadosCircle (Circle* c) {
 		this->dadosCircle = c;
+	}
+	
+	bool getFoiAtingido() {
+		return this->foiAtingido;
 	}
 };
 
