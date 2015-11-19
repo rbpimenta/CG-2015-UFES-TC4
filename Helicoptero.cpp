@@ -1,6 +1,8 @@
 #include "Helicoptero.h"
 
 Helicoptero::Helicoptero() {
+	transformacao = new Transformacao();
+	
 	// Inicializando velocidades
 	this->velocidadeHelicoptero = 0.0;
 
@@ -308,7 +310,7 @@ void Helicoptero::desenharHelicoptero() {
 	float yScale = 0.0;
 	float xTranslated = 0.0, yTranslated = 0.0;
 
-	glPushMatrix(); // Escala
+/*	glPushMatrix(); // Escala
 		// diminuir tamanho do helicoptero de acordo com tamanho do c�rculo
 		glScalef(fatorEscala, fatorEscala, 0.0);
 	
@@ -325,14 +327,16 @@ void Helicoptero::desenharHelicoptero() {
 		
 			/*xTranslated = (this->dadosCircle->getR())*fatorEscalaInverso;
 			 yTranslated = 0.0;
-			 */
+			 
 		
 			xTranslated = 0.0;
 			yTranslated = -(this->dadosCircle->getR()) * fatorEscalaInverso;
 		
 			// Ir para a parte superior do c�rculo
 			glTranslatef(xTranslated, yTranslated, 0.0);
-		
+		*/
+	this->transformacao->definirTransformacao(fatorEscala, this->dadosCircle->getCx(), this->dadosCircle->getCy(), this->dadosCircle->getR(), this->anguloGiro, this->anguloMira, this->mira->getHeight(), this->posX, this->posY);
+	this->transformacao->iniciarTransformacao(false);
 			glPushMatrix();
 				xTranslated = 0.0;
 				yTranslated = comprimentoHelicoptero / 2;
@@ -348,8 +352,10 @@ void Helicoptero::desenharHelicoptero() {
 			this->desenharCaudaDireita();
 			this->desenharCaudaEsquerda();
 			this->desenharCentroHelice();
-		glPopMatrix(); // fim direita do c�rculo
-	glPopMatrix();	// Fim escala
+
+	this->transformacao->fecharTransformacao();
+//		glPopMatrix(); // fim direita do c�rculo
+//	glPopMatrix();	// Fim escala
 }
 
 bool Helicoptero::detectarColisaoHelicoptero(Circle* c) {

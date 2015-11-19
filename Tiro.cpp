@@ -2,6 +2,8 @@
 
 Tiro::Tiro()
 {
+	transformacao = new Transformacao();
+	
 	this->velocidadeTiro = 0.0;
 	this->tiro = new Circle();
 	
@@ -19,6 +21,8 @@ Tiro::Tiro()
 }
 
 Tiro::Tiro(float fatorEscala,  float fatorEscalaInverso, float cx, float cy, float raio, float anguloGiro, float anguloMira, float miraHeight, float posX,	float posY) {
+	transformacao = new Transformacao(fatorEscala,  cx, cy, raio, anguloGiro, anguloMira, miraHeight, posX,	posY);
+	
 	this->velocidadeTiro = 0.0;
 	this->tiro = new Circle();
 	
@@ -67,7 +71,7 @@ void Tiro::carregarInformacoes() {
 }
 
 void Tiro::desenharTiro() {
-	glPushMatrix(); // Escala
+	/*glPushMatrix(); // Escala
 		// diminuir tamanho do helicoptero de acordo com tamanho do círculo
 		glScalef(this->fatorEscala, this->fatorEscala, 0.0);
 	
@@ -86,7 +90,13 @@ void Tiro::desenharTiro() {
 			yTranslated = -(this->raio)*fatorEscalaInverso*cos(this->anguloMira*M_PI/180);
 
 			// Ir para a parte superior do círculo
-			glTranslatef(xTranslated, yTranslated, 0.0);
+			glTranslatef(xTranslated, yTranslated, 0.0);*/
+			
+			if (this->transformacao != NULL) {
+				this->transformacao->definirTransformacao(fatorEscala, this->cx, this->cy, this->raio, this->anguloGiro, this->anguloMira, this->miraHeight, this->posX, this->posY);
+				this->transformacao->iniciarTransformacao(true);
+			}
+			
 			/*
 			glPushMatrix();
 				xTranslated = 0.0;
@@ -106,8 +116,9 @@ void Tiro::desenharTiro() {
 				glPopMatrix();
 				*/
 			//glPopMatrix();
-		glPopMatrix();
-	glPopMatrix(); // Escala
+//		glPopMatrix();
+//	glPopMatrix(); // Escala
+	this->transformacao->fecharTransformacao();
 }
 
 bool Tiro::verificarLimites(float limiteSuperior, float limiteInferior, float limiteEsquerdo, float limiteDireito){

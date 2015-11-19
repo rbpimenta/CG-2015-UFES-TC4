@@ -3,6 +3,7 @@
 
 #include "Circle.h"
 #include "tinyxml2.h"
+#include "Transformacao.h"
 
 #include <iostream>
 
@@ -12,6 +13,9 @@ using namespace std;
 class Tiro
 {
 	public:
+		
+		Transformacao* transformacao;
+		
 		float velocidadeTiro;
 		Circle* tiro;
 		

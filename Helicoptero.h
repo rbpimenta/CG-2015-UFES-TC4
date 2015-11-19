@@ -8,6 +8,7 @@
 #include "Tiro.h"
 #include "Time.h"
 #include "ObjetoResgate.h"
+#include "Transformacao.h"
 
 #include <GL/glut.h>
 #include <GL/glu.h>
@@ -24,6 +25,8 @@ class Helicoptero
 {
 public:
 	int identificador;
+	
+	Transformacao* transformacao;
 	
 public:
 	// Definindo velocidade do helicoptero
